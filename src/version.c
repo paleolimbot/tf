@@ -2,6 +2,8 @@
 #include <R.h>
 #include <Rinternals.h>
 
+#include "tensorflow/c/c_api.h"
+
 SEXP tf_c_version() {
-  return R_NilValue;
+  return Rf_mkString(TF_Version());
 }
