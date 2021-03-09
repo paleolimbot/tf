@@ -5,5 +5,5 @@
 #include "tensorflow/c/c_api.h"
 
 SEXP tf_c_version() {
-  return Rf_mkString(TF_Version());
+    return Rf_mkString(TF_Version());
 }
