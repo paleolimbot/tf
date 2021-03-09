@@ -7,6 +7,8 @@ test_that("tf_buffer can be created from raw and character", {
   expect_true(tf_buffer_valid(buf))
   expect_identical(rawToChar(as.raw(buf)), "this is a buffer")
 
+  expect_identical(as_tf_buffer(buf), buf)
+
   expect_identical(
     as.raw(buf),
     as.raw(as_tf_buffer(charToRaw("this is a buffer")))
@@ -46,4 +48,8 @@ test_that("tf_buffer invalid pointers behave as expected", {
   expect_error(tf_buffer_length(buf_invalid), "is NULL")
   expect_identical(format(buf_invalid), "<NULL>")
   expect_output(print(buf_invalid), "tf_buffer at.*?<NULL>")
+})
+
+test_that("new_tf_buffer errors for non-external ptr", {
+  expect_error(new_tf_buffer(NULL), "must be an 'externalptr'")
 })

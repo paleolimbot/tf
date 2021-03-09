@@ -10,6 +10,7 @@ extern SEXP tf_c_buffer_xptr_clone_raw(SEXP buffer_xptr, SEXP max_length);
 extern SEXP tf_c_buffer_valid(SEXP buffer_xptr);
 extern SEXP tf_c_buffer_xptr_length(SEXP buffer_xptr);
 extern SEXP tf_c_buffer_xptr_addr(SEXP buffer_xptr);
+extern SEXP tf_c_graph_xptr_import_graph_def(SEXP buffer_xptr);
 extern SEXP tf_c_version();
 static const R_CallMethodDef CallEntries[] = {
     {"tf_c_buffer_xptr_from_raw", (DL_FUNC) &tf_c_buffer_xptr_from_raw, 1},
@@ -18,6 +19,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"tf_c_buffer_valid", (DL_FUNC) &tf_c_buffer_valid, 1},
     {"tf_c_buffer_xptr_length", (DL_FUNC) &tf_c_buffer_xptr_length, 1},
     {"tf_c_buffer_xptr_addr", (DL_FUNC) &tf_c_buffer_xptr_addr, 1},
+    {"tf_c_graph_xptr_import_graph_def", (DL_FUNC) &tf_c_graph_xptr_import_graph_def, 1},
     {"tf_c_version", (DL_FUNC) &tf_c_version, 0},
     {NULL, NULL, 0}
 };

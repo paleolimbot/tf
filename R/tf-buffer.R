@@ -55,8 +55,6 @@ tf_buffer_valid <- function(x) {
   .Call("tf_c_buffer_valid", x)
 }
 
-#' @rdname as_tf_buffer
-#' @export
 new_tf_buffer <- function(x) {
   if (typeof(x) != "externalptr") {
     stop("`x` must be an 'externalptr'")

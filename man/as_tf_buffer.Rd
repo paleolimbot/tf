@@ -8,7 +8,6 @@
 \alias{tf_buffer_clone}
 \alias{tf_buffer_length}
 \alias{tf_buffer_valid}
-\alias{new_tf_buffer}
 \alias{as.raw.tf_buffer}
 \title{Create TensorFlow Buffers}
 \usage{
@@ -25,8 +24,6 @@ tf_buffer_clone(x)
 tf_buffer_length(x)
 
 tf_buffer_valid(x)
-
-new_tf_buffer(x)
 
 \method{as.raw}{tf_buffer}(x, ...)
 }
