@@ -47,14 +47,6 @@ SEXP tf_c_buffer_xptr_from_raw(SEXP raw_input) {
 // C-level utilities ----------
 
 // [[tf_c_api_export]]
-SEXP tf_buffer_xptr_from_buffer(TF_Buffer* buffer) {
-    SEXP buffer_xptr = PROTECT(R_MakeExternalPtr(buffer, R_NilValue, R_NilValue));
-    R_RegisterCFinalizer(buffer_xptr, &buffer_xptr_destroy);
-    UNPROTECT(1);
-    return buffer_xptr;
-}
-
-// [[tf_c_api_export]]
 SEXP tf_buffer_xptr_from_string(const void* data, size_t length) {
     SEXP buffer_xptr = PROTECT(R_MakeExternalPtr(NULL, R_NilValue, R_NilValue));
     R_RegisterCFinalizer(buffer_xptr, &buffer_xptr_destroy);
