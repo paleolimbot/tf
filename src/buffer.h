@@ -1,4 +1,7 @@
 
+#ifndef TF_BUFFER_H_INCLUDED
+#define TF_BUFFER_H_INCLUDED
+
 #include <R.h>
 #include <Rinternals.h>
 
@@ -26,3 +29,5 @@ static inline SEXP tf_buffer_xptr_from_string(const void* data, size_t length) {
 static inline TF_Buffer* tf_buffer_from_buffer_xptr(SEXP buffer_xptr) {
     return (TF_Buffer*) R_ExternalPtrAddr(buffer_xptr);
 }
+
+#endif

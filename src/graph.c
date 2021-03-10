@@ -5,6 +5,7 @@
 #include "tensorflow/c/c_api.h"
 
 #include "buffer.h"
+#include "graph.h"
 
 // constructors --------------
 
@@ -20,16 +21,17 @@ SEXP tf_c_graph_xptr_import_graph_def(SEXP buffer_xptr) {
         Rf_error("TF_Buffer* is NULL");
     }
 
+    SEXP graph_xptr = PROTECT(tf_graph_xptr_new());
+    TF_Graph* graph = tf_graph_from_graph_xptr(graph_xptr);
+
     TF_Status* status = TF_NewStatus();
-    TF_Graph* graph = TF_NewGraph();
-    // https://github.com/tensorflow/tensorflow/blob/master/tensorflow/c/c_api.h#L722-L829
     TF_ImportGraphDefOptions* options = TF_NewImportGraphDefOptions();
 
-    if (status == NULL || graph == NULL || options == NULL) {
+    if (status == NULL || options == NULL) {
         // # nocov start
         TF_DeleteStatus(status);
-        TF_DeleteGraph(graph);
         TF_DeleteImportGraphDefOptions(options);
+        UNPROTECT(1);
         Rf_error("Failed to alloc status, graph, or options");
         // # nocov end
     }
@@ -47,8 +49,6 @@ SEXP tf_c_graph_xptr_import_graph_def(SEXP buffer_xptr) {
         Rf_error(error_buf);
     }
 
-    SEXP graph_xptr = PROTECT(R_MakeExternalPtr(graph, R_NilValue, R_NilValue));
-    R_RegisterCFinalizer(graph_xptr, &graph_xptr_destroy);
     UNPROTECT(1);
     return graph_xptr;
 }
