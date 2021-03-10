@@ -10,7 +10,6 @@
 // constructors --------------
 
 void graph_xptr_destroy(SEXP graph_xptr) {
-    // deletion function are safe to call on nullptr
     TF_Graph* graph = (TF_Graph*) R_ExternalPtrAddr(graph_xptr);
     TF_DeleteGraph(graph);
 }
