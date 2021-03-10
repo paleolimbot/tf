@@ -83,7 +83,7 @@ format.tf_buffer <- function(x, ..., width = getOption("width")) {
 
 #' @export
 print.tf_buffer <- function(x, ..., width = getOption("width")) {
-  cat(sprintf("<tf_buffer at %s>", .Call("tf_c_buffer_xptr_addr", x)))
+  cat(sprintf("<tf_buffer at %s>", externalptr_addr(x)))
   cat("\n")
   cat(format(x))
   invisible(x)

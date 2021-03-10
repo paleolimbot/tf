@@ -17,6 +17,7 @@ static inline SEXP tf_graph_xptr_new() {
 
     SEXP graph_xptr = PROTECT(R_MakeExternalPtr(graph, R_NilValue, R_NilValue));
     R_RegisterCFinalizer(graph_xptr, &graph_xptr_destroy);
+    Rf_setAttrib(graph_xptr, R_ClassSymbol, Rf_mkString("tf_graph"));
     UNPROTECT(1);
     return graph_xptr;
 }

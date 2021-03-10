@@ -2,9 +2,12 @@
 % Please edit documentation in R/tf-graph.R
 \name{tf_graph_import_graph_def}
 \alias{tf_graph_import_graph_def}
+\alias{tf_graph_new}
 \title{Import a graph definition}
 \usage{
 tf_graph_import_graph_def(graph_def)
+
+tf_graph_new()
 }
 \arguments{
 \item{graph_def}{A \link[=as_tf_buffer]{tf_buffer} or \code{\link[=raw]{raw()}} vector
@@ -15,4 +18,8 @@ An object of class 'tf_graph'.
 }
 \description{
 Import a graph definition
+}
+\examples{
+tf_graph_empty()
+
 }

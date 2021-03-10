@@ -7,15 +7,27 @@
 #' @return An object of class 'tf_graph'.
 #' @export
 #'
+#' @examples
+#' tf_graph_new()
+#'
 tf_graph_import_graph_def <- function(graph_def) {
   graph_def <- as_tf_buffer(graph_def)
-  new_tf_graph(.Call("tf_c_graph_xptr_import_graph_def", graph_def))
+  .Call("tf_c_graph_xptr_import_graph_def", graph_def)
 }
 
-new_tf_graph <- function(x) {
-  if (typeof(x) != "externalptr") {
-    stop("`x` must be an 'externalptr'")
-  }
+#' @rdname tf_graph_import_graph_def
+#' @export
+tf_graph_new <- function() {
+  .Call("tf_c_graph_xptr_new")
+}
 
-  structure(x, class = "tf_graph")
+#' @export
+format.tf_graph <- function(x, ...) {
+  sprintf("<tf_graph at %s>", externalptr_addr(x))
+}
+
+#' @export
+print.tf_graph <- function(x, ...) {
+  cat(format(x))
+  invisible(x)
 }

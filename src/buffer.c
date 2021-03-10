@@ -3,7 +3,6 @@
 #include <Rinternals.h>
 
 #include <stdlib.h>
-#include <stdio.h>
 
 #include "tensorflow/c/c_api.h"
 
@@ -100,12 +99,4 @@ SEXP tf_c_buffer_xptr_length(SEXP buffer_xptr) {
     }
 
     return Rf_ScalarReal(buffer->length);
-}
-
-SEXP tf_c_buffer_xptr_addr(SEXP buffer_xptr) {
-    SEXP buffer = PROTECT(Rf_allocVector(RAWSXP, 256));
-    sprintf((char*) RAW(buffer), "%p", R_ExternalPtrAddr(buffer_xptr));
-    SEXP out = PROTECT(Rf_mkString((char*) RAW(buffer)));
-    UNPROTECT(2);
-    return out;
 }

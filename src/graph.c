@@ -14,6 +14,10 @@ void graph_xptr_destroy(SEXP graph_xptr) {
     TF_DeleteGraph(graph);
 }
 
+SEXP tf_c_graph_xptr_new() {
+    return tf_graph_xptr_new();
+}
+
 SEXP tf_c_graph_xptr_import_graph_def(SEXP buffer_xptr) {
     TF_Buffer* buffer = tf_buffer_from_buffer_xptr(buffer_xptr);
     if (buffer == NULL) {
@@ -48,6 +52,15 @@ SEXP tf_c_graph_xptr_import_graph_def(SEXP buffer_xptr) {
         Rf_error(error_buf);
     }
 
+    Rf_setAttrib(graph_xptr, R_ClassSymbol, Rf_mkString("tf_graph"));
     UNPROTECT(1);
     return graph_xptr;
 }
+
+// Iterate through the operations of a graph.  To use:
+// size_t pos = 0;
+// TF_Operation* oper;
+// while ((oper = TF_GraphNextOperation(graph, &pos)) != nullptr) {
+//   DoSomethingWithOperation(oper);
+// }
+// TF_CAPI_EXPORT extern TF_Operation* TF_GraphNextOperation(TF_Graph* graph, size_t* pos);
