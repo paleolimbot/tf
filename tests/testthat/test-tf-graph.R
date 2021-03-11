@@ -10,8 +10,8 @@ test_that("tf_graph_list_operations() works", {
       name = character(),
       op_type = character(),
       device = character(),
-      num_outputs = integer(),
-      num_inputs = integer()
+      num_inputs = integer(),
+      num_outputs = integer()
     )
   )
 })

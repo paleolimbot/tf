@@ -7,6 +7,14 @@
 #include "buffer.h"
 #include "graph.h"
 
+TF_Session* tf_session_from_session_xptr(SEXP session_xptr) {
+    return (TF_Session*) R_ExternalPtrAddr(session_xptr);
+}
+
+TF_Graph* tf_graph_from_session_xptr(SEXP session_xptr) {
+    return (TF_Graph*) R_ExternalPtrAddr(R_ExternalPtrTag(session_xptr));
+}
+
 // constructors --------------
 
 void session_xptr_destroy(SEXP session_xptr) {
@@ -26,7 +34,7 @@ SEXP tf_c_session_xptr_graph(SEXP session_xptr) {
 
 SEXP tf_c_load_session_from_saved_model(SEXP export_dir_sexp, SEXP tags_sexp) {
     if (Rf_length(export_dir_sexp) != 1) {
-        Rf_error("`export_dir` must be a character vector of lenfth 1");
+        Rf_error("`export_dir` must be a character vector of length 1");
     }
 
     // translateChar allocs are freed at the end of .Call()
@@ -83,3 +91,30 @@ SEXP tf_c_load_session_from_saved_model(SEXP export_dir_sexp, SEXP tags_sexp) {
     UNPROTECT(2);
     return session_xptr;
 }
+
+SEXP tf_c_session_xptr_run(SEXP session_xptr, SEXP oper_name_sexp) {
+    TF_Session* session = tf_session_from_session_xptr(session_xptr);
+    if (session == NULL) {
+        Rf_error("TF_Session* is NULL");
+    }
+
+    TF_Graph* graph = tf_graph_from_session_xptr(session_xptr);
+    if (graph == NULL) {
+        Rf_error("Tf_Graph* is NULL");
+    }
+
+    if (TYPEOF(oper_name_sexp) != STRSXP || Rf_length(oper_name_sexp) != 1) {
+        Rf_error("oper_name must be a character vector of length 1");
+    }
+
+    const char* oper_name = Rf_translateCharUTF8(STRING_ELT(oper_name_sexp, 0));
+
+
+    // https://github.com/AmirulOm/tensorflow_capi_sample
+    int num_inputs = 1;
+    TF_Output* input = malloc(sizeof(TF_Output) * num_inputs);
+    input[0].index = 0;
+
+    return R_NilValue;
+}
+
