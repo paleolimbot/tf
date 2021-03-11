@@ -32,27 +32,28 @@ SEXP tf_c_graph_xptr_list_operations(SEXP graph_xptr) {
     SEXP name = PROTECT(Rf_allocVector(STRSXP, n_operations));
     SEXP op_type = PROTECT(Rf_allocVector(STRSXP, n_operations));
     SEXP device = PROTECT(Rf_allocVector(STRSXP, n_operations));
-    SEXP num_outputs = PROTECT(Rf_allocVector(INTSXP, n_operations));
     SEXP num_inputs = PROTECT(Rf_allocVector(INTSXP, n_operations));
-
+    SEXP num_outputs = PROTECT(Rf_allocVector(INTSXP, n_operations));
+    
     pos = 0;
     size_t i = 0;
     while ((oper = TF_GraphNextOperation(graph, &pos)) != NULL) {
         SET_STRING_ELT(name, i, Rf_mkCharCE(TF_OperationName(oper), CE_UTF8));
         SET_STRING_ELT(op_type, i, Rf_mkCharCE(TF_OperationOpType(oper), CE_UTF8));
         SET_STRING_ELT(device, i, Rf_mkCharCE(TF_OperationDevice(oper), CE_UTF8));
-        INTEGER(num_outputs)[i] = TF_OperationNumOutputs(oper);
         INTEGER(num_inputs)[i] = TF_OperationNumInputs(oper);
+        INTEGER(num_outputs)[i] = TF_OperationNumOutputs(oper);
         i++;
     }
 
-    const char* names[] = {"name", "op_type", "device", "num_outputs", "num_inputs", ""};
+    const char* names[] = {"name", "op_type", "device", "num_inputs", "num_outputs", ""};
     SEXP result = PROTECT(Rf_mkNamed(VECSXP, names));
     SET_VECTOR_ELT(result, 0, name);
     SET_VECTOR_ELT(result, 1, op_type);
     SET_VECTOR_ELT(result, 2, device);
-    SET_VECTOR_ELT(result, 3, num_outputs);
-    SET_VECTOR_ELT(result, 4, num_inputs);
+    SET_VECTOR_ELT(result, 3, num_inputs);
+    SET_VECTOR_ELT(result, 4, num_outputs);
+    
     UNPROTECT(6);
     return result;
 }

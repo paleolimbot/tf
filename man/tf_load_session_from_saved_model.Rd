@@ -2,15 +2,20 @@
 % Please edit documentation in R/tf-session.R
 \name{tf_load_session_from_saved_model}
 \alias{tf_load_session_from_saved_model}
+\alias{tf_session_graph}
 \title{Title}
 \usage{
 tf_load_session_from_saved_model(export_dir, tags)
+
+tf_session_graph(x)
 }
 \arguments{
 \item{export_dir}{A directory to a saved model}
 
 \item{tags}{must include the set of tags used to identify one MetaGraphDef in
 the SavedModel.}
+
+\item{x}{An object of class 'tf_session'}
 }
 \value{
 An object of class 'tf_session'
@@ -21,5 +26,6 @@ Title
 \examples{
 saved <- system.file("extdata/fashion_mnist", package = "tf")
 session <- tf_load_session_from_saved_model(saved, "serve")
+tf_session_graph(session)
 
 }

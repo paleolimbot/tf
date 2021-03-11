@@ -15,6 +15,8 @@ tf_graph_list_operations(x)
 \arguments{
 \item{graph_def}{A \link[=as_tf_buffer]{tf_buffer} or \code{\link[=raw]{raw()}} vector
 containing the}
+
+\item{x}{A 'tf_graph' object.}
 }
 \value{
 An object of class 'tf_graph'.
