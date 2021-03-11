@@ -26,5 +26,6 @@ Import a graph definition
 }
 \examples{
 tf_graph_new()
+tf_graph_list_operations(tf_graph_new())
 
 }

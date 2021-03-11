@@ -1,5 +1,5 @@
 
-#' Title
+#' TensorFlow Sessions
 #'
 #' @param x An object of class 'tf_session'
 #' @param export_dir A directory to a saved model
@@ -14,7 +14,6 @@
 #' session <- tf_load_session_from_saved_model(saved, "serve")
 #' (graph <- tf_session_graph(session))
 #' tf_graph_list_operations(graph)
-#'
 #'
 tf_load_session_from_saved_model <- function(export_dir, tags) {
   new_tf_session(.Call("tf_c_load_session_from_saved_model", path.expand(export_dir), tags))

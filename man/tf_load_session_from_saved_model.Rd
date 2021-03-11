@@ -3,7 +3,7 @@
 \name{tf_load_session_from_saved_model}
 \alias{tf_load_session_from_saved_model}
 \alias{tf_session_graph}
-\title{Title}
+\title{TensorFlow Sessions}
 \usage{
 tf_load_session_from_saved_model(export_dir, tags)
 
@@ -21,11 +21,12 @@ the SavedModel.}
 An object of class 'tf_session'
 }
 \description{
-Title
+TensorFlow Sessions
 }
 \examples{
 saved <- system.file("extdata/fashion_mnist", package = "tf")
 session <- tf_load_session_from_saved_model(saved, "serve")
-tf_session_graph(session)
+(graph <- tf_session_graph(session))
+tf_graph_list_operations(graph)
 
 }
