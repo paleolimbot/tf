@@ -10,6 +10,7 @@ extern SEXP tf_c_buffer_xptr_clone_raw(SEXP buffer_xptr, SEXP max_length);
 extern SEXP tf_c_buffer_valid(SEXP buffer_xptr);
 extern SEXP tf_c_buffer_xptr_length(SEXP buffer_xptr);
 extern SEXP tf_c_graph_xptr_new();
+extern SEXP tf_c_graph_xptr_list_operations(SEXP graph_xptr);
 extern SEXP tf_c_graph_xptr_import_graph_def(SEXP buffer_xptr);
 extern SEXP tf_c_session_xptr_graph(SEXP session_xptr);
 extern SEXP tf_c_load_session_from_saved_model(SEXP export_dir_sexp, SEXP tags_sexp);
@@ -22,6 +23,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"tf_c_buffer_valid", (DL_FUNC) &tf_c_buffer_valid, 1},
     {"tf_c_buffer_xptr_length", (DL_FUNC) &tf_c_buffer_xptr_length, 1},
     {"tf_c_graph_xptr_new", (DL_FUNC) &tf_c_graph_xptr_new, 0},
+    {"tf_c_graph_xptr_list_operations", (DL_FUNC) &tf_c_graph_xptr_list_operations, 1},
     {"tf_c_graph_xptr_import_graph_def", (DL_FUNC) &tf_c_graph_xptr_import_graph_def, 1},
     {"tf_c_session_xptr_graph", (DL_FUNC) &tf_c_session_xptr_graph, 1},
     {"tf_c_load_session_from_saved_model", (DL_FUNC) &tf_c_load_session_from_saved_model, 2},

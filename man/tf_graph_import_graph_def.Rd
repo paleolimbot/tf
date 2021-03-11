@@ -3,11 +3,14 @@
 \name{tf_graph_import_graph_def}
 \alias{tf_graph_import_graph_def}
 \alias{tf_graph_new}
+\alias{tf_graph_list_operations}
 \title{Import a graph definition}
 \usage{
 tf_graph_import_graph_def(graph_def)
 
 tf_graph_new()
+
+tf_graph_list_operations(x)
 }
 \arguments{
 \item{graph_def}{A \link[=as_tf_buffer]{tf_buffer} or \code{\link[=raw]{raw()}} vector
@@ -20,6 +23,6 @@ An object of class 'tf_graph'.
 Import a graph definition
 }
 \examples{
-tf_graph_empty()
+tf_graph_new()
 
 }
