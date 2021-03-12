@@ -52,7 +52,9 @@ SEXP tf_c_tensor_xptr_valid(SEXP tensor_xptr) {
 // is more easily handled in R, so this transformation (e.g., via t())
 // must be done in advance for now.
 SEXP tf_c_tensor_xptr_from_array_real(SEXP array_sexp) {
-    TF_DataType dt = TF_DOUBLE;
+    // just for the proof-of-concept
+    TF_DataType dt = TF_FLOAT;
+    size_t dt_size = TF_DataTypeSize(dt);
 
     // in R these have to be integers
     SEXP dims_sexp = Rf_getAttrib(array_sexp, R_DimSymbol);
@@ -76,15 +78,18 @@ SEXP tf_c_tensor_xptr_from_array_real(SEXP array_sexp) {
     // use the default TF_AllocateTensor to manage the memory instead.
     // (by the docs, it is preferred to malloc() and free()).
     R_xlen_t array_size = Rf_xlength(array_sexp);
-    TF_Tensor* tensor = TF_AllocateTensor(dt, dims, n_dims, array_size * sizeof(double));
+    TF_Tensor* tensor = TF_AllocateTensor(dt, dims, n_dims, array_size * dt_size);
 
     SEXP tensor_xptr = PROTECT(tf_tensor_xptr_from_tensor(tensor));
     if (tensor == NULL) {
-        Rf_error("Failed to alloc tensor of size %ul", array_size * sizeof(double));
+        Rf_error("Failed to alloc tensor of size %ul", array_size * dt_size);
     }
 
-    if (array_size > 0) {
-        memcpy(TF_TensorData(tensor), REAL(array_sexp), array_size * sizeof(double));
+    // copy with conversion
+    float* tensor_data = (float*) TF_TensorData(tensor);
+    double* array_data = REAL(array_sexp);
+    for (R_xlen_t i = 0; i < array_size; i++) {
+        tensor_data[i] = array_data[i];
     }
 
     UNPROTECT(1);

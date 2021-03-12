@@ -3,11 +3,14 @@
 \name{tf_load_session_from_saved_model}
 \alias{tf_load_session_from_saved_model}
 \alias{tf_session_graph}
+\alias{tf_session_run}
 \title{TensorFlow Sessions}
 \usage{
 tf_load_session_from_saved_model(export_dir, tags)
 
 tf_session_graph(x)
+
+tf_session_run(x, input_operation, output_operation, input)
 }
 \arguments{
 \item{export_dir}{A directory to a saved model}

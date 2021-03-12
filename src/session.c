@@ -8,6 +8,7 @@
 
 #include "buffer.h"
 #include "graph.h"
+#include "tensor.h"
 #include "util.h"
 
 TF_Session* tf_session_from_session_xptr(SEXP session_xptr) {
@@ -95,7 +96,9 @@ SEXP tf_c_load_session_from_saved_model(SEXP export_dir_sexp, SEXP tags_sexp) {
     return session_xptr;
 }
 
-SEXP tf_c_session_xptr_run(SEXP session_xptr, SEXP oper_name_input_sexp, SEXP oper_name_output_sexp) {
+SEXP tf_c_session_xptr_run(SEXP session_xptr, 
+                           SEXP oper_name_input_sexp, SEXP oper_name_output_sexp,
+                           SEXP input_tensor_xptr_list) {
     TF_Session* session = tf_session_from_session_xptr(session_xptr);
     if (session == NULL) {
         Rf_error("TF_Session* is NULL");
@@ -114,43 +117,37 @@ SEXP tf_c_session_xptr_run(SEXP session_xptr, SEXP oper_name_input_sexp, SEXP op
 
     const char* oper_name_output = Rf_translateCharUTF8(STRING_ELT(oper_name_output_sexp, 0));
     TF_Operation* oper_output = TF_GraphOperationByName(graph, oper_name_output);
-    if (oper_input == NULL) {
+    if (oper_output == NULL) {
         Rf_error("Can't load output operation '%s' from graph", oper_name_output);
     }
 
     // inspired by example:
     // https://github.com/AmirulOm/tensorflow_capi_sample
-    int num_inputs = 1;
-    TF_Output* input = malloc(sizeof(TF_Output) * num_inputs);
-    if (input == NULL) {
-        Rf_error("Failed to alloc input array of size %d", num_inputs);
-    }
-    input[0].index = 0;
-    input[0].oper = oper_input;
 
-    int num_outputs = 1;
-    TF_Output* output = malloc(sizeof(TF_Output) * num_outputs);
-    if (input == NULL) {
-        free(input);
-        Rf_error("Failed to alloc output array of size %d", num_outputs);
-    }
-    output[0].index = 0;
-    output[0].oper = oper_output;
+    int num_inputs = Rf_length(input_tensor_xptr_list);
+    TF_Tensor* input_values[num_inputs];
+    TF_Output input[num_inputs];
 
-    // tensor stuff, should be in its own file with externalptrs
-    TF_Tensor** input_values = malloc(sizeof(TF_Tensor*) * num_inputs);
-    if (input_values == NULL) {
-        free(input);
-        free(output);
-        Rf_error("Failed to alloc input values array of size %d", num_inputs);
+    for (int i = 0; i < num_inputs; i++) {
+        input_values[i] = tf_tensor_from_tensor_xptr(VECTOR_ELT(input_tensor_xptr_list, i));
+        input[i].index = i;
+        input[i].oper = oper_input;
     }
 
-    TF_Tensor** output_values = malloc(sizeof(TF_Tensor*) * num_outputs);
-    if (output_values == NULL) {
-        free(input);
-        free(output);
-        free(input_values);
-        Rf_error("Failed to alloc output values array of size %d", num_inputs);
+    int num_outputs = TF_OperationNumOutputs(oper_output);
+    TF_Output output[num_outputs];
+    TF_Tensor* output_values[num_outputs];
+
+    for (int i = 0; i < num_outputs; i++) {
+        output[i].index = i;
+        output[i].oper = oper_output;
+        output_values[0] = NULL;
+    }
+
+    // release the input values since the tensors are the responsibility
+    // of TF_SessionRun once called (probably?)
+    for (int i = 0; i < num_inputs; i++) {
+        tf_tensor_xptr_release_tensor(VECTOR_ELT(input_tensor_xptr_list, i));
     }
 
     TF_SessionRun(
@@ -166,6 +163,17 @@ SEXP tf_c_session_xptr_run(SEXP session_xptr, SEXP oper_name_input_sexp, SEXP op
         tf_global_status
     );
 
-    return R_NilValue;
+    if (TF_GetCode(tf_global_status) != TF_OK) {
+        Rf_error(TF_Message(tf_global_status));
+    }
+
+    // wrap output values in external pointer to ensure they are deleted
+    SEXP result = PROTECT(Rf_allocVector(VECSXP, num_outputs));
+    for (int i = 0; i < num_outputs; i++) {
+        SET_VECTOR_ELT(result, i, tf_tensor_xptr_from_tensor(output_values[i]));
+    }
+
+    UNPROTECT(1);
+    return result;
 }
 

@@ -16,7 +16,7 @@ extern SEXP tf_c_graph_xptr_list_operations(SEXP graph_xptr);
 extern SEXP tf_c_graph_xptr_import_graph_def(SEXP buffer_xptr);
 extern SEXP tf_c_session_xptr_graph(SEXP session_xptr);
 extern SEXP tf_c_load_session_from_saved_model(SEXP export_dir_sexp, SEXP tags_sexp);
-extern SEXP tf_c_session_xptr_run(SEXP session_xptr, SEXP oper_name_input_sexp, SEXP oper_name_output_sexp);
+extern SEXP tf_c_session_xptr_run(SEXP session_xptr, SEXP oper_name_input_sexp, SEXP oper_name_output_sexp, SEXP input_tensor_xptr_list);
 extern SEXP tf_c_tensor_xptr_attributes(SEXP tensor_xptr);
 extern SEXP tf_c_tensor_xptr_valid(SEXP tensor_xptr);
 extern SEXP tf_c_tensor_xptr_from_array_real(SEXP array_sexp);
@@ -33,7 +33,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"tf_c_graph_xptr_import_graph_def", (DL_FUNC) &tf_c_graph_xptr_import_graph_def, 1},
     {"tf_c_session_xptr_graph", (DL_FUNC) &tf_c_session_xptr_graph, 1},
     {"tf_c_load_session_from_saved_model", (DL_FUNC) &tf_c_load_session_from_saved_model, 2},
-    {"tf_c_session_xptr_run", (DL_FUNC) &tf_c_session_xptr_run, 3},
+    {"tf_c_session_xptr_run", (DL_FUNC) &tf_c_session_xptr_run, 4},
     {"tf_c_tensor_xptr_attributes", (DL_FUNC) &tf_c_tensor_xptr_attributes, 1},
     {"tf_c_tensor_xptr_valid", (DL_FUNC) &tf_c_tensor_xptr_valid, 1},
     {"tf_c_tensor_xptr_from_array_real", (DL_FUNC) &tf_c_tensor_xptr_from_array_real, 1},

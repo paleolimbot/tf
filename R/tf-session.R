@@ -25,6 +25,19 @@ tf_session_graph <- function(x) {
   .Call("tf_c_session_xptr_graph", x)
 }
 
+#' @rdname tf_load_session_from_saved_model
+#' @export
+tf_session_run <- function(x, input_operation, output_operation, input) {
+  stopifnot(
+    inherits(x, "tf_session"),
+    is.character(input_operation), length(input_operation) == 1,
+    is.character(output_operation), length(output_operation) == 1,
+    all(vapply(input, tf_tensor_valid, logical(1)))
+  )
+
+  .Call("tf_c_session_xptr_run", x, input_operation, output_operation, input)
+}
+
 new_tf_session <- function(x) {
   if (typeof(x) != "externalptr") {
     stop("`x` must be an 'externalptr'")
