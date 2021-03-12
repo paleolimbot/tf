@@ -5,6 +5,10 @@
 #' @param export_dir A directory to a saved model
 #' @param tags must include the set of tags used to identify one MetaGraphDef in
 #'   the SavedModel.
+#' @param input_operation,output_operation Names of the input/output operations
+#'   from the [tf_session_graph()].
+#' @param input A `list()` of [tf_tensor][as_tf_tensor] or objects that can be
+#'   converted to then (notably, arrays).
 #'
 #' @return An object of class 'tf_session'
 #' @export
@@ -14,6 +18,17 @@
 #' session <- tf_load_session_from_saved_model(saved, "serve")
 #' (graph <- tf_session_graph(session))
 #' tf_graph_list_operations(graph)
+#'
+#' # run a prediction!
+#' result <- tf_session_run(
+#'   session,
+#'   "serving_default_flatten_input",
+#'   "StatefulPartitionedCall",
+#'   list(tf_fashion_mnist_test_images[1, , , drop = FALSE])
+#' )
+#'
+#' result
+#' as.array(result[[1]])
 #'
 tf_load_session_from_saved_model <- function(export_dir, tags) {
   new_tf_session(.Call("tf_c_load_session_from_saved_model", path.expand(export_dir), tags))
@@ -28,6 +43,8 @@ tf_session_graph <- function(x) {
 #' @rdname tf_load_session_from_saved_model
 #' @export
 tf_session_run <- function(x, input_operation, output_operation, input) {
+  input <- lapply(input, as_tf_tensor)
+
   stopifnot(
     inherits(x, "tf_session"),
     is.character(input_operation), length(input_operation) == 1,

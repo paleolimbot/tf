@@ -2,15 +2,23 @@
 % Please edit documentation in R/tf-tensor.R
 \name{as_tf_tensor}
 \alias{as_tf_tensor}
+\alias{as_tf_tensor.tf_tensor}
 \alias{as_tf_tensor.array}
+\alias{as.array.tf_tensor}
 \title{Create TensorFlow Tensors}
 \usage{
-as_tf_tensor(x)
+as_tf_tensor(x, ...)
 
-\method{as_tf_tensor}{array}(x)
+\method{as_tf_tensor}{tf_tensor}(x, ...)
+
+\method{as_tf_tensor}{array}(x, ...)
+
+\method{as.array}{tf_tensor}(x, ...)
 }
 \arguments{
 \item{x}{An object to convert to a tensor}
+
+\item{...}{Unused}
 }
 \value{
 An object of class 'tf_tensor'

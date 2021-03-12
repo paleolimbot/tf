@@ -2,6 +2,7 @@
 #' Create TensorFlow Tensors
 #'
 #' @param x An object to convert to a tensor
+#' @param ... Unused
 #'
 #' @return An object of class 'tf_tensor'
 #' @export
@@ -10,15 +11,36 @@
 #' (t <- as_tf_tensor(matrix(1)))
 #' tf_tensor_attributes(t)
 #'
-as_tf_tensor <- function(x) {
+as_tf_tensor <- function(x, ...) {
   UseMethod("as_tf_tensor")
 }
 
 #' @rdname as_tf_tensor
 #' @export
-as_tf_tensor.array <- function(x) {
+as_tf_tensor.tf_tensor <- function(x, ...) {
+  x
+}
+
+#' @rdname as_tf_tensor
+#' @export
+as_tf_tensor.array <- function(x, ...) {
   stopifnot(typeof(x) == "double")
+
+  # aperm() takes care of the row-major/column-major difference
+  # in the same way that keras does
+  x <- aperm(x, rev(seq_along(dim(x))))
+
   .Call("tf_c_tensor_xptr_from_array_real", x)
+}
+
+#' @rdname as_tf_tensor
+#' @export
+as.array.tf_tensor <- function(x, ...) {
+  stopifnot(tf_tensor_valid(x))
+  result <- .Call("tf_c_array_real_from_tensor_xptr", x)
+  # aperm() takes care of the row-major/column-major difference
+  # in the same way that keras does
+  aperm(result, rev(seq_along(dim(result))))
 }
 
 #' Inspect Tensors

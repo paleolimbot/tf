@@ -19,6 +19,12 @@ tf_session_run(x, input_operation, output_operation, input)
 the SavedModel.}
 
 \item{x}{An object of class 'tf_session'}
+
+\item{input_operation, output_operation}{Names of the input/output operations
+from the \code{\link[=tf_session_graph]{tf_session_graph()}}.}
+
+\item{input}{A \code{list()} of \link[=as_tf_tensor]{tf_tensor} or objects that can be
+converted to then (notably, arrays).}
 }
 \value{
 An object of class 'tf_session'
@@ -31,5 +37,16 @@ saved <- system.file("extdata/fashion_mnist", package = "tf")
 session <- tf_load_session_from_saved_model(saved, "serve")
 (graph <- tf_session_graph(session))
 tf_graph_list_operations(graph)
+
+# run a prediction!
+result <- tf_session_run(
+  session,
+  "serving_default_flatten_input",
+  "StatefulPartitionedCall",
+  list(tf_fashion_mnist_test_images[1, , , drop = FALSE])
+)
+
+result
+as.array(result[[1]])
 
 }

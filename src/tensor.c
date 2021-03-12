@@ -47,6 +47,45 @@ SEXP tf_c_tensor_xptr_valid(SEXP tensor_xptr) {
     return Rf_ScalarLogical(valid);
 }
 
+// to do array <-> tesor conversion properly we need templated C++
+// below is just for proof-of-concept
+
+SEXP tf_c_array_real_from_tensor_xptr(SEXP tensor_xptr) {
+    TF_Tensor* tensor = tf_tensor_from_tensor_xptr(tensor_xptr);
+    if (tensor == NULL) {
+        Rf_error("TF_Tensor* is NULL");
+    }
+
+    int data_type = TF_TensorType(tensor);
+    int num_dims = TF_NumDims(tensor);
+    R_xlen_t size = TF_TensorElementCount(tensor);
+
+    SEXP shape = PROTECT(Rf_allocVector(INTSXP, num_dims));
+    for (int i = 0; i < num_dims; i++) {
+        INTEGER(shape)[i] = TF_Dim(tensor, i);
+    }
+
+    SEXP result;
+    switch (data_type) {
+    case TF_FLOAT:
+        result = PROTECT(Rf_allocArray(REALSXP, shape));
+        double* result_ptr = REAL(result);
+        float* data_ptr = (float*) TF_TensorData(tensor);
+        for (R_xlen_t i = 0; i < size; i++) {
+            result_ptr[i] = data_ptr[i];
+        }
+        break;
+    default:
+        Rf_error(
+            "Can't convert tf_tensor with data type '%s' to array",
+            tf_data_type_label(data_type)
+        );
+    }
+
+    UNPROTECT(2);
+    return result;
+}
+
 // Note here that array_sexp is not really an R array in the sense that
 // tensors are stored in row-major order. However, transforming arrays
 // is more easily handled in R, so this transformation (e.g., via t())

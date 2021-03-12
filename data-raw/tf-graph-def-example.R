@@ -46,6 +46,17 @@ model %>% fit(train_images, train_labels, epochs = 5, verbose = 2)
 
 model %>% save_model_tf("inst/extdata/fashion_mnist.tf")
 
+# some predictions so we can check results later
+predictions <- model %>% predict(test_images[1:2, , , drop = FALSE])
+
+dput(predictions[1, ])
+predictions1 <- c(
+  2.67113851037948e-08, 4.62104746828951e-12, 2.38624675574783e-11,
+  6.06263705904553e-10, 1.00199695762804e-10, 0.0023099051322788,
+  2.37655743973164e-08, 0.0459560267627239, 1.49679912908596e-08,
+  0.951733946800232
+)
+
 # also save some images as package data
 tf_fashion_mnist_test_images <- test_images[1:100, , ]
 usethis::use_data(tf_fashion_mnist_test_images, overwrite = TRUE)

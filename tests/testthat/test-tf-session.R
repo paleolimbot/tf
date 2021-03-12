@@ -55,4 +55,10 @@ test_that("tf_session_run() works", {
     list(input_tensor)
   )
 
+  # this should have been released and deleted by TF_SessionRun
+  expect_false(tf_tensor_valid(input_tensor))
+
+  # this should be high probably of class number 10
+  expect_true(tf_tensor_valid(result[[1]]))
+  expect_identical(which.max(as.array(result[[1]])), 10L)
 })
