@@ -23,7 +23,7 @@ test_that("tf_session_run() works", {
       "StatefulPartitionedCall",
       list()
     ),
-    "must feed a placeholder"
+    "must feed a value"
   )
 
   expect_error(
