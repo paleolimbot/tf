@@ -70,7 +70,7 @@ jobs:
         shell: Rscript {0}
 
 
-      - name: Install TensorFlow C API (Linux)
+      - name: Install TensorFlow C API (MacOS)
         if: runner.os == 'MacOS'
         run: brew install tensorflow
 

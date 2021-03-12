@@ -12,6 +12,6 @@ tf_fashion_mnist_test_images
 }
 \description{
 100 test images from the Fashion-MNIST data set as provided by
-\code{\link[keras:dataset_fashion_mnist]{keras::dataset_fashion_mnist()}}.
+\code{keras::dataset_fashion_mnist()}.
 }
 \keyword{datasets}
