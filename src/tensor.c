@@ -14,10 +14,7 @@ void tensor_xptr_destroy(SEXP tensor_xptr) {
 }
 
 SEXP tf_c_tensor_xptr_attributes(SEXP tensor_xptr) {
-    TF_Tensor* tensor = tf_tensor_from_tensor_xptr(tensor_xptr);
-    if (tensor == NULL) {
-        Rf_error("TF_Tensor* is NULL");
-    }
+    TF_Tensor* tensor = tf_tensor_checked_from_tensor_xptr(tensor_xptr);
 
     int data_type = TF_TensorType(tensor);
     int num_dims = TF_NumDims(tensor);
@@ -41,20 +38,11 @@ SEXP tf_c_tensor_xptr_attributes(SEXP tensor_xptr) {
     return result;
 }
 
-SEXP tf_c_tensor_xptr_valid(SEXP tensor_xptr) {
-    int valid = Rf_inherits(tensor_xptr, "tf_tensor") &&
-        (tf_tensor_from_tensor_xptr(tensor_xptr) != NULL);
-    return Rf_ScalarLogical(valid);
-}
-
 // to do array <-> tesor conversion properly we need templated C++
 // below is just for proof-of-concept
 
 SEXP tf_c_array_real_from_tensor_xptr(SEXP tensor_xptr) {
-    TF_Tensor* tensor = tf_tensor_from_tensor_xptr(tensor_xptr);
-    if (tensor == NULL) {
-        Rf_error("TF_Tensor* is NULL");
-    }
+    TF_Tensor* tensor = tf_tensor_checked_from_tensor_xptr(tensor_xptr);
 
     int data_type = TF_TensorType(tensor);
     int num_dims = TF_NumDims(tensor);

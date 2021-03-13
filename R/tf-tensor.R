@@ -57,7 +57,7 @@ tf_tensor_attributes <- function(x) {
 #' @rdname tf_tensor_attributes
 #' @export
 tf_tensor_valid <- function(x) {
-  .Call("tf_c_tensor_xptr_valid", x)
+  externalptr_valid(x, "tf_tensor")
 }
 
 #' @export

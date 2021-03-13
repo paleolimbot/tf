@@ -13,6 +13,18 @@ static inline TF_Tensor* tf_tensor_from_tensor_xptr(SEXP tensor_xptr) {
     return (TF_Tensor*) R_ExternalPtrAddr(tensor_xptr);
 }
 
+static inline TF_Tensor* tf_tensor_checked_from_tensor_xptr(SEXP tensor_xptr) {
+    if (!Rf_inherits(tensor_xptr, "tf_tensor")) {
+        Rf_error("TF_Tensor* externalptr must inherit from 'tf_tensor'");
+    }
+
+    TF_Tensor* tensor = tf_tensor_from_tensor_xptr(tensor_xptr);
+    if (tensor == NULL) {
+        Rf_error("TF_Tensor* externalptr points to NULL");
+    }
+    return tensor;
+}
+
 static inline SEXP tf_tensor_xptr_from_tensor(TF_Tensor* tensor) {
     SEXP tensor_xptr = PROTECT(R_MakeExternalPtr(tensor, R_NilValue, R_NilValue));
     R_RegisterCFinalizer(tensor_xptr, tensor_xptr_destroy);

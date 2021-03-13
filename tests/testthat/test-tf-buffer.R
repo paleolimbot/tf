@@ -43,13 +43,9 @@ test_that("tf_buffer invalid pointers behave as expected", {
   unlink(tmp_rds)
 
   expect_false(tf_buffer_valid(buf_invalid))
-  expect_error(as.raw(buf_invalid), "is NULL")
-  expect_error(tf_buffer_clone(buf_invalid), "is NULL")
-  expect_error(tf_buffer_length(buf_invalid), "is NULL")
+  expect_error(as.raw(buf_invalid), "points to NULL")
+  expect_error(tf_buffer_clone(buf_invalid), "points to NULL")
+  expect_error(tf_buffer_length(buf_invalid), "points to NULL")
   expect_identical(format(buf_invalid), "<NULL>")
   expect_output(print(buf_invalid), "tf_buffer at.*?<NULL>")
-})
-
-test_that("new_tf_buffer errors for non-external ptr", {
-  expect_error(new_tf_buffer(NULL), "must be an 'externalptr'")
 })

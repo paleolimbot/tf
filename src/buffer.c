@@ -7,6 +7,7 @@
 #include "tensorflow/c/c_api.h"
 
 #include "buffer.h"
+#include "util.h"
 
 // constructors --------------
 
@@ -17,30 +18,23 @@ void buffer_xptr_sexp_deallocate(void* data, size_t length) {
 }
 
 void buffer_xptr_destroy(SEXP buffer_xptr) {
-    // deletion function are safe to call on nullptr
     TF_Buffer* buffer = (TF_Buffer*) R_ExternalPtrAddr(buffer_xptr);
     TF_DeleteBuffer(buffer);
 }
 
 SEXP tf_c_buffer_xptr_from_raw(SEXP raw_input) {
-    // these calls could technically longjmp, so do them before malloc()
     void* buffer_data = RAW(raw_input);
     size_t buffer_length = Rf_xlength(raw_input);
-    SEXP buffer_xptr = PROTECT(R_MakeExternalPtr(NULL, raw_input, R_NilValue));
-    R_RegisterCFinalizer(buffer_xptr, &buffer_xptr_destroy);
-
-
+    
     TF_Buffer* buffer = TF_NewBuffer();
-    if (buffer == NULL) {
-        Rf_error("Failed to alloc TF_Buffer"); // # nocov
-    }
+    tf_check_trivial_alloc(buffer, "TF_Buffer");
 
     buffer->data = buffer_data;
     buffer->length = buffer_length;
     buffer->data_deallocator = &buffer_xptr_sexp_deallocate;
 
-    R_SetExternalPtrAddr(buffer_xptr, buffer);
-
+    SEXP buffer_xptr = PROTECT(tf_buffer_xptr_from_buffer(buffer));
+    R_SetExternalPtrTag(buffer_xptr, raw_input);
     UNPROTECT(1);
     return buffer_xptr;
 }
@@ -48,19 +42,12 @@ SEXP tf_c_buffer_xptr_from_raw(SEXP raw_input) {
 // accessors --------------
 
 SEXP tf_c_buffer_xptr_clone_buffer_xptr(SEXP buffer_xptr) {
-    TF_Buffer* buffer = tf_buffer_from_buffer_xptr(buffer_xptr);
-    if (buffer == NULL) {
-        Rf_error("TF_Buffer* is NULL");
-    }
-
+    TF_Buffer* buffer = tf_buffer_checked_from_buffer_xptr(buffer_xptr);
     return tf_buffer_xptr_from_string(buffer->data, buffer->length);
 }
 
 SEXP tf_c_buffer_xptr_clone_raw(SEXP buffer_xptr, SEXP max_length) {
-    TF_Buffer* buffer = tf_buffer_from_buffer_xptr(buffer_xptr);
-    if (buffer == NULL) {
-        Rf_error("TF_Buffer* is NULL");
-    }
+    TF_Buffer* buffer = tf_buffer_checked_from_buffer_xptr(buffer_xptr);
 
     size_t n_copy;
     if (max_length == R_NilValue) {
@@ -86,17 +73,7 @@ SEXP tf_c_buffer_xptr_clone_raw(SEXP buffer_xptr, SEXP max_length) {
     return result;
 }
 
-SEXP tf_c_buffer_valid(SEXP buffer_xptr) {
-    int valid = Rf_inherits(buffer_xptr, "tf_buffer") &&
-        (tf_buffer_from_buffer_xptr(buffer_xptr) != NULL);
-    return Rf_ScalarLogical(valid);
-}
-
 SEXP tf_c_buffer_xptr_length(SEXP buffer_xptr) {
-    TF_Buffer* buffer = tf_buffer_from_buffer_xptr(buffer_xptr);
-    if (buffer == NULL) {
-        Rf_error("TF_Buffer* is NULL");
-    }
-
+    TF_Buffer* buffer = tf_buffer_checked_from_buffer_xptr(buffer_xptr);
     return Rf_ScalarReal(buffer->length);
 }

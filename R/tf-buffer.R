@@ -34,13 +34,13 @@ as_tf_buffer.character <- function(x, ...) {
 #' @rdname as_tf_buffer
 #' @export
 as_tf_buffer.raw <- function(x, ...) {
-  new_tf_buffer(.Call("tf_c_buffer_xptr_from_raw", x))
+  .Call("tf_c_buffer_xptr_from_raw", x)
 }
 
 #' @rdname as_tf_buffer
 #' @export
 tf_buffer_clone <- function(x) {
-  new_tf_buffer(.Call("tf_c_buffer_xptr_clone_buffer_xptr", x))
+  .Call("tf_c_buffer_xptr_clone_buffer_xptr", x)
 }
 
 #' @rdname as_tf_buffer
@@ -52,15 +52,7 @@ tf_buffer_length <- function(x) {
 #' @rdname as_tf_buffer
 #' @export
 tf_buffer_valid <- function(x) {
-  .Call("tf_c_buffer_valid", x)
-}
-
-new_tf_buffer <- function(x) {
-  if (typeof(x) != "externalptr") {
-    stop("`x` must be an 'externalptr'")
-  }
-
-  structure(x, class = "tf_buffer")
+  externalptr_valid(x, "tf_buffer")
 }
 
 #' @rdname as_tf_buffer
