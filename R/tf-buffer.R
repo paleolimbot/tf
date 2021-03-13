@@ -8,7 +8,7 @@
 #' @export
 #'
 #' @examples
-#' (buf <- as_tf_buffer("this is a buffer"))
+#' (buf <- as_tf_buffer(charToRaw("this is a buffer")))
 #' tf_buffer_length(buf)
 #' tf_buffer_valid(buf)
 #' as.raw(buf)
@@ -22,13 +22,6 @@ as_tf_buffer <- function(x, ...) {
 #' @export
 as_tf_buffer.tf_buffer <- function(x, ...) {
   x
-}
-
-#' @rdname as_tf_buffer
-#' @export
-as_tf_buffer.character <- function(x, ...) {
-  stopifnot(length(x) == 1, !is.na(x))
-  as_tf_buffer(charToRaw(x))
 }
 
 #' @rdname as_tf_buffer

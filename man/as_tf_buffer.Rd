@@ -3,7 +3,6 @@
 \name{as_tf_buffer}
 \alias{as_tf_buffer}
 \alias{as_tf_buffer.tf_buffer}
-\alias{as_tf_buffer.character}
 \alias{as_tf_buffer.raw}
 \alias{tf_buffer_clone}
 \alias{tf_buffer_length}
@@ -14,8 +13,6 @@
 as_tf_buffer(x, ...)
 
 \method{as_tf_buffer}{tf_buffer}(x, ...)
-
-\method{as_tf_buffer}{character}(x, ...)
 
 \method{as_tf_buffer}{raw}(x, ...)
 
@@ -39,7 +36,7 @@ An object of class 'tf_buffer'
 Create TensorFlow Buffers
 }
 \examples{
-(buf <- as_tf_buffer("this is a buffer"))
+(buf <- as_tf_buffer(charToRaw("this is a buffer")))
 tf_buffer_length(buf)
 tf_buffer_valid(buf)
 as.raw(buf)

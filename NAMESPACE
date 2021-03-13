@@ -2,7 +2,6 @@
 
 S3method(as.array,tf_tensor)
 S3method(as.raw,tf_buffer)
-S3method(as_tf_buffer,character)
 S3method(as_tf_buffer,raw)
 S3method(as_tf_buffer,tf_buffer)
 S3method(as_tf_tensor,array)

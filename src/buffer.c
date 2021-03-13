@@ -49,7 +49,15 @@ SEXP tf_c_buffer_xptr_clone_buffer_xptr(SEXP buffer_xptr) {
 SEXP tf_c_buffer_xptr_clone_raw(SEXP buffer_xptr, SEXP max_length) {
     TF_Buffer* buffer = tf_buffer_checked_from_buffer_xptr(buffer_xptr);
 
+    // in the common case where the whole vector should be copied
+    // and is backed by a RAWSXP, just return the RAWSXP
+    int backed_by_raw_vector = R_ExternalPtrTag(buffer_xptr) != R_NilValue;
+    if (max_length == R_NilValue && backed_by_raw_vector) {
+        return R_ExternalPtrTag(buffer_xptr);
+    }
+
     size_t n_copy;
+
     if (max_length == R_NilValue) {
         n_copy = buffer->length;
     } else {

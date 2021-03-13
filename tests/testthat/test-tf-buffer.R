@@ -1,11 +1,16 @@
 
 test_that("tf_buffer can be created from raw and character", {
-  buf <- as_tf_buffer("this is a buffer")
+  buf <- as_tf_buffer(charToRaw("this is a buffer"))
   expect_s3_class(buf, "tf_buffer")
   expect_type(buf, "externalptr")
   expect_equal(tf_buffer_length(buf), nchar("this is a buffer"))
   expect_true(tf_buffer_valid(buf))
   expect_identical(rawToChar(as.raw(buf)), "this is a buffer")
+  # force a copy of the data since the above case is optimized in C
+  expect_identical(
+    rawToChar(as.raw(tf_buffer_clone(as_tf_buffer(as.raw(buf))))),
+    "this is a buffer"
+  )
 
   expect_identical(as_tf_buffer(buf), buf)
 
@@ -19,7 +24,7 @@ test_that("tf_buffer can be created from raw and character", {
 })
 
 test_that("tf_buffer can be cloned", {
-  buf <- as_tf_buffer("this is another buffer")
+  buf <- as_tf_buffer(charToRaw("this is another buffer"))
   expect_identical(
     as.raw(tf_buffer_clone(buf)),
     charToRaw("this is another buffer")
@@ -27,7 +32,7 @@ test_that("tf_buffer can be cloned", {
 })
 
 test_that("tf_buffer can be formatted/printed", {
-  buf <- as_tf_buffer("this is yet another buffer")
+  buf <- as_tf_buffer(charToRaw("this is yet another buffer"))
   expect_output(print(buf), "tf_buffer at")
   expect_match(format(buf), "n = 26")
 
@@ -38,7 +43,7 @@ test_that("tf_buffer can be formatted/printed", {
 
 test_that("tf_buffer invalid pointers behave as expected", {
   tmp_rds <- tempfile()
-  saveRDS(as_tf_buffer("too many buffers"), tmp_rds)
+  saveRDS(as_tf_buffer(charToRaw("too many buffers")), tmp_rds)
   buf_invalid <- readRDS(tmp_rds)
   unlink(tmp_rds)
 
