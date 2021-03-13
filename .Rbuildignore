@@ -5,3 +5,5 @@
 ^\.vscode$
 ^README\.Rmd$
 ^\.github$
+^configure\.log$
+^src/Makevars$

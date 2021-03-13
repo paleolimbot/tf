@@ -1,0 +1,38 @@
+
+# INCLUDE_DIR and LIB_DIR manually via e.g:
+# R CMD INSTALL --configure-vars='INCLUDE_DIR=/.../include LIB_DIR=/.../lib'
+
+PKG_LIBS="-ltesorflow"
+PKG_CPPFLAGS=""
+
+if [ "$INCLUDE_DIR" ] || [ "$LIB_DIR" ]; then
+  echo "Found INCLUDE_DIR and/or LIB_DIR!"
+  PKG_CPPFLAGS="-I$INCLUDE_DIR $PKG_CPPFLAGS"
+  PKG_LIBS="-L$LIB_DIR $PKG_LIBS"
+fi
+
+# Find compiler
+CC=`${R_HOME}/bin/R CMD config CC`
+CFLAGS=`${R_HOME}/bin/R CMD config CFLAGS`
+CPPFLAGS=`${R_HOME}/bin/R CMD config CPPFLAGS`
+
+# For debugging
+echo "Testing compiler using PKG_CPPFLAGS=$PKG_CPPFLAGS"
+
+# Test configuration
+${CC} ${CPPFLAGS} ${PKG_CFLAGS} ${CFLAGS} -E tools/test-tensorflow.c >/dev/null 2>configure.log
+
+# Customize the error
+if [ $? -ne 0 ]; then
+  echo "Configuration failed because the TensorFlow C API was not found."
+  echo "Try following the instructions found here:"
+  echo "https://www.tensorflow.org/install/lang_c"
+  echo "Currently only an install using the /usr/local method is supported."
+  echo "-------------------------- [ERROR MESSAGE] ---------------------------"
+  cat configure.log
+  echo "--------------------------------------------------------------------"
+  exit 1
+fi
+
+# Write to Makevars
+sed -e "s|@cflags@|$PKG_CPPFLAGS|" -e "s|@libs@|$PKG_LIBS|" src/Makevars.in > src/Makevars
