@@ -8,5 +8,5 @@ if(!file.exists("../windows/include/tensorflow/c/c_api.h")){
 
   # a few missing headers in the windows package that result in failed compile
   unlink("../windows/include", recursive = TRUE)
-  unzip("include-2.4.0.zip", exdir = "../windows/include")
+  unzip("include-2.4.0.zip", exdir = "../windows")
 }
