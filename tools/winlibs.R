@@ -5,4 +5,7 @@ if(!file.exists("../windows/include/tensorflow/c/c_api.h")){
   dir.create("../windows", showWarnings = FALSE)
   unzip("lib.zip", exdir = "../windows")
   unlink("lib.zip")
+
+  # a few missing headers in the windows package that result in failed compile
+  unzip("include-2.4.0.zip", exdir = "../windows/include", overwrite = TRUE)
 }
