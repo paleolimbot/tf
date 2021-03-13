@@ -33,7 +33,7 @@ An object of class 'tf_session'
 TensorFlow Sessions
 }
 \examples{
-saved <- system.file("extdata/fashion_mnist", package = "tf")
+saved <- system.file("extdata/fashion_mnist.zip", package = "tf")
 session <- tf_load_session_from_saved_model(saved, "serve")
 (graph <- tf_session_graph(session))
 tf_graph_list_operations(graph)

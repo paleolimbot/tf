@@ -7,13 +7,13 @@ test_that("tf_load_session_from_saved_model() errors", {
 })
 
 test_that("tf_load_session_from_saved_model() can load the example model", {
-  saved <- system.file("extdata/fashion_mnist", package = "tf")
+  saved <- system.file("extdata/fashion_mnist.zip", package = "tf")
   session <- tf_load_session_from_saved_model(saved, tags = "serve")
   expect_s3_class(session, "tf_session")
 })
 
 test_that("tf_session_run() works", {
-  saved <- system.file("extdata/fashion_mnist", package = "tf")
+  saved <- system.file("extdata/fashion_mnist.zip", package = "tf")
   session <- tf_load_session_from_saved_model(saved, tags = "serve")
 
   expect_error(

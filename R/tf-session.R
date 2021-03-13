@@ -14,7 +14,7 @@
 #' @export
 #'
 #' @examples
-#' saved <- system.file("extdata/fashion_mnist", package = "tf")
+#' saved <- system.file("extdata/fashion_mnist.zip", package = "tf")
 #' session <- tf_load_session_from_saved_model(saved, "serve")
 #' (graph <- tf_session_graph(session))
 #' tf_graph_list_operations(graph)
@@ -31,6 +31,17 @@
 #' as.array(result[[1]])
 #'
 tf_load_session_from_saved_model <- function(export_dir, tags) {
+  export_dir <- path.expand(export_dir)
+
+  # allow zipped version (prevents executable file warning in this package)
+  if (!dir.exists(export_dir) && isTRUE(endsWith(export_dir, ".zip"))) {
+    ex_dir <- tempfile()
+    on.exit(unlink(ex_dir, recursive = TRUE))
+    utils::unzip(export_dir, exdir = ex_dir)
+    pb_files <- list.files(ex_dir, pattern = "\\.pb$", full.names = TRUE, recursive = TRUE)
+    export_dir <- dirname(pb_files[1])
+  }
+
   new_tf_session(.Call("tf_c_load_session_from_saved_model", path.expand(export_dir), tags))
 }
 
