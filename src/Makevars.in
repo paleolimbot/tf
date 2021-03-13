@@ -1,1 +1,3 @@
-PKG_LIBS = -ltensorflow
+
+PKG_CPPFLAGS = @cppflags@
+PKG_LIBS = @libs@

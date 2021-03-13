@@ -2,7 +2,7 @@
 # INCLUDE_DIR and LIB_DIR manually via e.g:
 # R CMD INSTALL --configure-vars='INCLUDE_DIR=/.../include LIB_DIR=/.../lib'
 
-PKG_LIBS="-ltesorflow"
+PKG_LIBS="-ltensorflow"
 PKG_CPPFLAGS=""
 
 if [ "$INCLUDE_DIR" ] || [ "$LIB_DIR" ]; then
@@ -35,4 +35,4 @@ if [ $? -ne 0 ]; then
 fi
 
 # Write to Makevars
-sed -e "s|@cflags@|$PKG_CPPFLAGS|" -e "s|@libs@|$PKG_LIBS|" src/Makevars.in > src/Makevars
+sed -e "s|@cppflags@|$PKG_CPPFLAGS|" -e "s|@libs@|$PKG_LIBS|" src/Makevars.in > src/Makevars
