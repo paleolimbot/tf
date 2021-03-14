@@ -12,9 +12,9 @@
 #' tf_graph_new()
 #' tf_graph_list_operations(tf_graph_new())
 #'
-tf_graph_import_graph_def <- function(graph_def) {
+tf_graph_import_graph_def <- function(x, graph_def) {
   graph_def <- as_tf_buffer(graph_def)
-  .Call("tf_c_graph_xptr_import_graph_def", graph_def)
+  .Call("tf_c_graph_xptr_import_graph_def", x, graph_def)
 }
 
 #' @rdname tf_graph_import_graph_def

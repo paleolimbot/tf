@@ -19,6 +19,10 @@ static inline SEXP tf_buffer_xptr_from_buffer(TF_Buffer* buffer) {
     return buffer_xptr;
 }
 
+static inline SEXP tf_buffer_xptr_new() {
+    return tf_buffer_xptr_from_buffer(TF_NewBuffer());
+}
+
 static inline SEXP tf_buffer_xptr_from_string(const void* data, size_t length) {
     TF_Buffer* buffer = TF_NewBufferFromString(data, length);
     tf_check_trivial_alloc(buffer, "TF_Buffer");

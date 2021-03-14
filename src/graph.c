@@ -22,7 +22,6 @@ SEXP tf_c_graph_xptr_new() {
 SEXP tf_c_graph_xptr_list_operations(SEXP graph_xptr) {
     TF_Graph* graph = tf_graph_checked_from_graph_xptr(graph_xptr);
 
-    // count operations to alloc outputs
     size_t n_operations = 0;
     size_t pos = 0;
     TF_Operation* oper;
@@ -59,11 +58,9 @@ SEXP tf_c_graph_xptr_list_operations(SEXP graph_xptr) {
     return result;
 }
 
-SEXP tf_c_graph_xptr_import_graph_def(SEXP buffer_xptr) {
+SEXP tf_c_graph_xptr_import_graph_def(SEXP graph_xptr, SEXP buffer_xptr) {
+    TF_Graph* graph = tf_graph_checked_from_graph_xptr(graph_xptr);
     TF_Buffer* buffer = tf_buffer_checked_from_buffer_xptr(buffer_xptr);
-
-    SEXP graph_xptr = PROTECT(tf_graph_xptr_new());
-    TF_Graph* graph = tf_graph_from_graph_xptr(graph_xptr);
 
     TF_ImportGraphDefOptions* options = TF_NewImportGraphDefOptions();
     tf_check_trivial_alloc(options, "TF_ImportGraphDefOptions");
