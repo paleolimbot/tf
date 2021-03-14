@@ -50,7 +50,7 @@ This is a basic example which shows you how to solve a common problem:
 library(tf)
 
 # load a saved model!
-saved <- system.file("extdata/fashion_mnist", package = "tf")
+saved <- system.file("extdata/fashion_mnist.zip", package = "tf")
 session <- tf_load_session_from_saved_model(saved, "serve")
 
 # run a prediction!
