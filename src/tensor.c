@@ -53,7 +53,7 @@ SEXP tf_c_tensor_xptr_clone_tensor_xptr(SEXP tensor_xptr) {
     tf_check_trivial_alloc(tensor, "TF_Tensor");
     memcpy(TF_TensorData(new_tensor), TF_TensorData(tensor), size);
 
-    return tf_tensor_xptr_from_tensor(tensor);
+    return tf_tensor_xptr_from_tensor(new_tensor);
 }
 
 // to do array <-> tesor conversion properly we need templated C++
