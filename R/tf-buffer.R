@@ -1,7 +1,12 @@
 
 #' Create TensorFlow Buffers
 #'
+#' These can be any binary representation but are often
+#' [Protocol Buffers](https://developers.google.com/protocol-buffers).
+#' Files that contain them often have a .pb extension.
+#'
 #' @param x An object
+#' @param file A filename from which to read or write a protobuf
 #' @param ... Unused
 #'
 #' @return An object of class 'tf_buffer'
@@ -52,6 +57,24 @@ tf_buffer_valid <- function(x) {
 #' @export
 as.raw.tf_buffer <- function(x, ...) {
   .Call("tf_c_buffer_xptr_clone_raw", x, NULL)
+}
+
+#' @rdname as_tf_buffer
+#' @export
+write_pb <- function(x, file) {
+  x <- as_tf_buffer(x)
+  con <- file(file, open = "wb")
+  on.exit(close(con))
+  writeBin(as.raw(x), con)
+  invisible(x)
+}
+
+#' @rdname as_tf_buffer
+#' @export
+read_pb <- function(file) {
+  con <- file(file, open = "rb")
+  on.exit(close(con))
+  as_tf_buffer(readBin(con, "raw", file.size(file)))
 }
 
 #' @export

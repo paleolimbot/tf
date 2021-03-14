@@ -54,3 +54,19 @@ test_that("tf_buffer invalid pointers behave as expected", {
   expect_identical(format(buf_invalid), "<NULL>")
   expect_output(print(buf_invalid), "tf_buffer at.*?<NULL>")
 })
+
+
+test_that("buffers can be read and written", {
+  tmp_file <- tempfile()
+  expect_identical(
+    as.raw(write_pb(charToRaw("a buffer to write"), tmp_file)),
+    charToRaw("a buffer to write")
+  )
+
+  expect_identical(
+    as.raw(read_pb(tmp_file)),
+    charToRaw("a buffer to write")
+  )
+
+  unlink(tmp_file)
+})

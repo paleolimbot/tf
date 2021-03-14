@@ -8,6 +8,8 @@
 \alias{tf_buffer_length}
 \alias{tf_buffer_valid}
 \alias{as.raw.tf_buffer}
+\alias{write_pb}
+\alias{read_pb}
 \title{Create TensorFlow Buffers}
 \usage{
 as_tf_buffer(x, ...)
@@ -23,17 +25,25 @@ tf_buffer_length(x)
 tf_buffer_valid(x)
 
 \method{as.raw}{tf_buffer}(x, ...)
+
+write_pb(x, file)
+
+read_pb(x, file)
 }
 \arguments{
 \item{x}{An object}
 
 \item{...}{Unused}
+
+\item{file}{A filename from which to read or write a protobuf}
 }
 \value{
 An object of class 'tf_buffer'
 }
 \description{
-Create TensorFlow Buffers
+These can be any binary representation but are often
+\href{https://developers.google.com/protocol-buffers}{Protocol Buffers}.
+Files that contain them often have a .pb extension.
 }
 \examples{
 (buf <- as_tf_buffer(charToRaw("this is a buffer")))
