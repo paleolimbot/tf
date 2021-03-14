@@ -6,36 +6,11 @@
 
 #include "tensorflow/c/c_api.h"
 
+#include "session.h"
 #include "buffer.h"
 #include "graph.h"
 #include "tensor.h"
 #include "util.h"
-
-TF_Session* tf_session_from_session_xptr(SEXP session_xptr) {
-    return (TF_Session*) R_ExternalPtrAddr(session_xptr);
-}
-
-TF_Session* tf_session_checked_from_session_xptr(SEXP session_xptr) {
-    if (!Rf_inherits(session_xptr, "tf_session")) {
-        Rf_error("TF_Buffer* externalptr must inherit from 'tf_session'");
-    }
-
-    TF_Session* session = tf_session_from_session_xptr(session_xptr);
-    if (session == NULL) {
-        Rf_error("TF_Session* externalptr points to NULL");
-    }
-
-    return session;
-}
-
-TF_Graph* tf_graph_from_session_xptr(SEXP session_xptr) {
-    return tf_graph_from_graph_xptr(R_ExternalPtrTag(session_xptr));
-}
-
-TF_Graph* tf_graph_checked_from_session_xptr(SEXP session_xptr) {
-    tf_session_checked_from_session_xptr(session_xptr);
-    return tf_graph_checked_from_graph_xptr(R_ExternalPtrTag(session_xptr));
-}
 
 // constructors --------------
 
@@ -88,8 +63,8 @@ SEXP tf_c_load_session_from_saved_model(SEXP export_dir_sexp, SEXP tags_sexp) {
     tf_check_status(tf_global_status);
 
     // attach graph to the session to protect from garbage collection
-    SEXP session_xptr = PROTECT(R_MakeExternalPtr(session, graph_xptr, R_NilValue));
-    R_RegisterCFinalizer(session_xptr, &session_xptr_destroy);
+    SEXP session_xptr = PROTECT(tf_session_xptr_from_session(session));
+    tf_session_xptr_attach_graph_xptr(session_xptr, graph_xptr);
     UNPROTECT(2);
     return session_xptr;
 }
