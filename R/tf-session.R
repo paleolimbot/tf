@@ -42,7 +42,7 @@ tf_load_session_from_saved_model <- function(export_dir, tags) {
     export_dir <- dirname(pb_files[1])
   }
 
-  new_tf_session(.Call("tf_c_load_session_from_saved_model", path.expand(export_dir), tags))
+  .Call("tf_c_load_session_from_saved_model", path.expand(export_dir), tags)
 }
 
 #' @rdname tf_load_session_from_saved_model
@@ -64,12 +64,4 @@ tf_session_run <- function(x, input_operation, output_operation, input) {
   )
 
   .Call("tf_c_session_xptr_run", x, input_operation, output_operation, input)
-}
-
-new_tf_session <- function(x) {
-  if (typeof(x) != "externalptr") {
-    stop("`x` must be an 'externalptr'")
-  }
-
-  structure(x, class = "tf_session")
 }

@@ -48,6 +48,7 @@ print.tf_graph <- function(x, ..., max_ops = 6) {
 
     if (nrow(ops) > max_ops) {
       cat(sprintf("...and %d more", nrow(ops) - max_ops))
+      cat("\n")
     }
   }
 
