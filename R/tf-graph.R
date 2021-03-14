@@ -19,6 +19,12 @@ tf_graph_import_graph_def <- function(x, graph_def) {
 
 #' @rdname tf_graph_import_graph_def
 #' @export
+tf_graph_to_graph_def <- function(x) {
+  .Call("tf_c_graph_xptr_to_graph_def", x)
+}
+
+#' @rdname tf_graph_import_graph_def
+#' @export
 tf_graph_new <- function() {
   .Call("tf_c_graph_xptr_new")
 }

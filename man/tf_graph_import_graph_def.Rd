@@ -2,21 +2,24 @@
 % Please edit documentation in R/tf-graph.R
 \name{tf_graph_import_graph_def}
 \alias{tf_graph_import_graph_def}
+\alias{tf_graph_to_graph_def}
 \alias{tf_graph_new}
 \alias{tf_graph_list_operations}
 \title{Import a graph definition}
 \usage{
-tf_graph_import_graph_def(graph_def)
+tf_graph_import_graph_def(x, graph_def)
+
+tf_graph_to_graph_def(x)
 
 tf_graph_new()
 
 tf_graph_list_operations(x)
 }
 \arguments{
+\item{x}{A 'tf_graph' object.}
+
 \item{graph_def}{A \link[=as_tf_buffer]{tf_buffer} or \code{\link[=raw]{raw()}} vector
 containing the}
-
-\item{x}{A 'tf_graph' object.}
 }
 \value{
 An object of class 'tf_graph'.

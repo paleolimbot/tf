@@ -68,6 +68,17 @@ SEXP tf_c_graph_xptr_import_graph_def(SEXP graph_xptr, SEXP buffer_xptr) {
     TF_GraphImportGraphDef(graph, buffer, options, tf_global_status);
     tf_check_status(tf_global_status);
 
-    UNPROTECT(1);
     return graph_xptr;
+}
+
+SEXP tf_c_graph_xptr_to_graph_def(SEXP graph_xptr) {
+    TF_Graph* graph = tf_graph_checked_from_graph_xptr(graph_xptr);
+    SEXP buffer_xptr = PROTECT(tf_buffer_xptr_new());
+    TF_Buffer* buffer = tf_buffer_from_buffer_xptr(buffer_xptr);
+
+    TF_GraphToGraphDef(graph, buffer, tf_global_status);
+    tf_check_status(tf_global_status);
+
+    UNPROTECT(1);
+    return buffer_xptr;
 }

@@ -27,3 +27,11 @@ test_that("tf_graph_import_graph_def() errors for invalid buffer", {
     "Invalid GraphDef"
   )
 })
+
+test_that("tf_graph_to_graph_def() can roundtrip an empty graph", {
+  roundtrip_empty <- tf_graph_import_graph_def(tf_graph_new(), tf_graph_to_graph_def(tf_graph_new()))
+  expect_identical(
+    tf_graph_list_operations(roundtrip_empty),
+    tf_graph_list_operations(tf_graph_new())
+  )
+})
