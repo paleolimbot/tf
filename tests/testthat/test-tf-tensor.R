@@ -13,5 +13,10 @@ test_that("tensors can be created", {
   expect_identical(attrs$num_dims, 2L)
   expect_identical(attrs$shape, c(1, 1))
 
+  expect_identical(
+    tf_tensor_attributes(tf_tensor_clone(t)),
+    tf_tensor_attributes(t)
+  )
+
   expect_identical(as.array(t), as.array(matrix(1)))
 })

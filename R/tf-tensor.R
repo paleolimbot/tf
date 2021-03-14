@@ -35,6 +35,12 @@ as_tf_tensor.array <- function(x, ...) {
 
 #' @rdname as_tf_tensor
 #' @export
+tf_tensor_clone <- function(x) {
+  .Call("tf_c_tensor_xptr_clone_tensor_xptr", x)
+}
+
+#' @rdname as_tf_tensor
+#' @export
 as.array.tf_tensor <- function(x, ...) {
   stopifnot(tf_tensor_valid(x))
   result <- .Call("tf_c_array_real_from_tensor_xptr", x)

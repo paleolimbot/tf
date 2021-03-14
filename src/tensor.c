@@ -7,6 +7,7 @@
 #include "tensorflow/c/c_api.h"
 
 #include "tensor.h"
+#include "util.h"
 
 void tensor_xptr_destroy(SEXP tensor_xptr) {
     TF_Tensor* tensor = (TF_Tensor*) R_ExternalPtrAddr(tensor_xptr);
@@ -36,6 +37,23 @@ SEXP tf_c_tensor_xptr_attributes(SEXP tensor_xptr) {
 
     UNPROTECT(1);
     return result;
+}
+
+SEXP tf_c_tensor_xptr_clone_tensor_xptr(SEXP tensor_xptr) {
+    TF_Tensor* tensor = tf_tensor_checked_from_tensor_xptr(tensor_xptr);
+    int dt = TF_TensorType(tensor);
+    int num_dims = TF_NumDims(tensor);
+    size_t size = TF_TensorByteSize(tensor);
+    int64_t dims[num_dims];
+    for (int i = 0; i < num_dims; i++) {
+        dims[i] = TF_Dim(tensor, i);
+    }
+
+    TF_Tensor* new_tensor = TF_AllocateTensor(dt, dims, num_dims, size);
+    tf_check_trivial_alloc(tensor, "TF_Tensor");
+    memcpy(TF_TensorData(new_tensor), TF_TensorData(tensor), size);
+
+    return tf_tensor_xptr_from_tensor(tensor);
 }
 
 // to do array <-> tesor conversion properly we need templated C++
@@ -106,11 +124,9 @@ SEXP tf_c_tensor_xptr_from_array_real(SEXP array_sexp) {
     // (by the docs, it is preferred to malloc() and free()).
     R_xlen_t array_size = Rf_xlength(array_sexp);
     TF_Tensor* tensor = TF_AllocateTensor(dt, dims, n_dims, array_size * dt_size);
+    tf_check_trivial_alloc(tensor, "TF_Tensor*");
 
     SEXP tensor_xptr = PROTECT(tf_tensor_xptr_from_tensor(tensor));
-    if (tensor == NULL) {
-        Rf_error("Failed to alloc tensor of size %ul", array_size * dt_size);
-    }
 
     // copy with conversion
     float* tensor_data = (float*) TF_TensorData(tensor);

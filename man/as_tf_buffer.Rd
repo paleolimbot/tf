@@ -28,7 +28,7 @@ tf_buffer_valid(x)
 
 write_pb(x, file)
 
-read_pb(x, file)
+read_pb(file)
 }
 \arguments{
 \item{x}{An object}

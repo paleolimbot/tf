@@ -4,6 +4,7 @@
 \alias{as_tf_tensor}
 \alias{as_tf_tensor.tf_tensor}
 \alias{as_tf_tensor.array}
+\alias{tf_tensor_clone}
 \alias{as.array.tf_tensor}
 \title{Create TensorFlow Tensors}
 \usage{
@@ -12,6 +13,8 @@ as_tf_tensor(x, ...)
 \method{as_tf_tensor}{tf_tensor}(x, ...)
 
 \method{as_tf_tensor}{array}(x, ...)
+
+tf_tensor_clone(x)
 
 \method{as.array}{tf_tensor}(x, ...)
 }
