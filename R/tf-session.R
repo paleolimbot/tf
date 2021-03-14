@@ -55,13 +55,25 @@ tf_session_graph <- function(x) {
 #' @export
 tf_session_run <- function(x, input_operation, output_operation, input) {
   input <- lapply(input, as_tf_tensor)
-
-  stopifnot(
-    inherits(x, "tf_session"),
-    is.character(input_operation), length(input_operation) == 1,
-    is.character(output_operation), length(output_operation) == 1,
-    all(vapply(input, tf_tensor_valid, logical(1)))
-  )
-
   .Call("tf_c_session_xptr_run", x, input_operation, output_operation, input)
+}
+
+#' @export
+format.tf_session <- function(x, ...) {
+  if (externalptr_valid(x, "tf_session")) {
+    sprintf("<tf_session at %s>", externalptr_addr(x))
+  } else {
+    sprintf("<tf_session <invalid>>")
+  }
+}
+
+#' @export
+print.tf_session <- function(x, ...) {
+  cat(format(x))
+  cat("\n")
+  graph <- tf_session_graph(x)
+  cat("Attached ")
+  print(graph, ...)
+
+  invisible(x)
 }

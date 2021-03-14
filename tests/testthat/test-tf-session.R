@@ -10,6 +10,8 @@ test_that("tf_load_session_from_saved_model() can load the example model", {
   saved <- system.file("extdata/fashion_mnist.zip", package = "tf")
   session <- tf_load_session_from_saved_model(saved, tags = "serve")
   expect_s3_class(session, "tf_session")
+  expect_match(format(session), "<tf_session at")
+  expect_identical(expect_output(print(session), "<tf_session at"), session)
 })
 
 test_that("tf_session_run() works", {

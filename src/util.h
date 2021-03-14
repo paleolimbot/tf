@@ -18,4 +18,17 @@ static inline void tf_check_trivial_alloc(void* ptr, const char* ptr_type) {
     }
 }
 
+static inline const char* tf_cstring_from_sexp(SEXP value, const char* arg) {
+    if ((TYPEOF(value) != STRSXP) || (Rf_length(value) != 1)) {
+        Rf_error("`%s` must be a character vector of length 1", arg);
+    }
+
+    SEXP value0 = STRING_ELT(value, 0);
+    if (value0 == NA_STRING) {
+        Rf_error("`%s` can't be NA_character_");
+    }
+
+    return Rf_translateCharUTF8(STRING_ELT(value, 0));
+}
+
 #endif

@@ -28,19 +28,19 @@ SEXP tf_c_session_xptr_graph(SEXP session_xptr) {
 }
 
 SEXP tf_c_load_session_from_saved_model(SEXP export_dir_sexp, SEXP tags_sexp) {
-    if (Rf_length(export_dir_sexp) != 1) {
-        Rf_error("`export_dir` must be a character vector of length 1");
-    }
+    const char* export_dir = tf_cstring_from_sexp(export_dir_sexp, "export_dir");
 
-    // translateChar allocs are freed at the end of .Call()
-    const char* export_dir = Rf_translateCharUTF8(STRING_ELT(export_dir_sexp, 0));
-
-    // tags_len + 1 plus the "" terminator so that  tags is
+    // tags_len + 1 plus the "" terminator so that tags is
     // null-terminated and never length zero
     int tags_len = Rf_length(tags_sexp);
     const char* tags[tags_len + 1];
+    SEXP tags_sexp_item;
     for (int i = 0; i < tags_len; i++) {
-        tags[i] = Rf_translateCharUTF8(STRING_ELT(tags_sexp, i));
+        tags_sexp_item = STRING_ELT(tags_sexp, i);
+        if (tags_sexp_item == NA_STRING) {
+            Rf_error("`tags` value cannot be NA_character_");
+        }
+        tags[i] = Rf_translateCharUTF8(tags_sexp_item);
     }
     tags[tags_len] = "";
 
@@ -95,7 +95,7 @@ SEXP tf_c_session_xptr_run(SEXP session_xptr,
     TF_Output input[num_inputs];
 
     for (int i = 0; i < num_inputs; i++) {
-        input_values[i] = tf_tensor_from_tensor_xptr(VECTOR_ELT(input_tensor_xptr_list, i));
+        input_values[i] = tf_tensor_checked_from_tensor_xptr(VECTOR_ELT(input_tensor_xptr_list, i));
         input[i].index = i;
         input[i].oper = oper_input;
     }
@@ -140,4 +140,3 @@ SEXP tf_c_session_xptr_run(SEXP session_xptr,
     UNPROTECT(1);
     return result;
 }
-
