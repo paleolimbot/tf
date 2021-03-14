@@ -20,3 +20,13 @@ test_that("tensors can be created", {
 
   expect_identical(as.array(t), as.array(matrix(1)))
 })
+
+test_that("tf_tensor() to array conversion works", {
+  arr <- array(as.numeric(1:12), dim = c(2, 6))
+  ten <- as_tf_tensor(arr)
+  expect_identical(as.array(ten), arr)
+
+  arr <- array(as.numeric(1:24), dim = c(2, 3, 4))
+  ten <- as_tf_tensor(arr)
+  expect_identical(as.array(ten), arr)
+})

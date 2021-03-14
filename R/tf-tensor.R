@@ -28,7 +28,7 @@ as_tf_tensor.array <- function(x, ...) {
 
   # aperm() takes care of the row-major/column-major difference
   # in the same way that keras does
-  x <- aperm(x, rev(seq_along(dim(x))))
+  x[] <- aperm(x, rev(seq_along(dim(x))))
 
   .Call("tf_c_tensor_xptr_from_array_real", x)
 }
@@ -46,6 +46,7 @@ as.array.tf_tensor <- function(x, ...) {
   result <- .Call("tf_c_array_real_from_tensor_xptr", x)
   # aperm() takes care of the row-major/column-major difference
   # in the same way that keras does
+  dim(result) <- rev(dim(result))
   aperm(result, rev(seq_along(dim(result))))
 }
 

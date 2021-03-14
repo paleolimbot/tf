@@ -58,7 +58,7 @@ result <- tf_session_run(
   session,
   "serving_default_flatten_input",
   "StatefulPartitionedCall",
-  list(tf_fashion_mnist_test_images[1, , , drop = FALSE])
+  list(tf_fashion_mnist_test_images[1:2, , , drop = FALSE])
 )
 
 as.array(result[[1]])
