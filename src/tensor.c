@@ -1,13 +1,11 @@
 #define R_NO_REMAP
 #include <R.h>
 #include <Rinternals.h>
-
 #include <memory.h>
-
 #include "tensorflow/c/c_api.h"
-
 #include "tensor.h"
 #include "util.h"
+#include "tensor-convert.h"
 
 void tensor_xptr_destroy(SEXP tensor_xptr) {
     TF_Tensor* tensor = (TF_Tensor*) R_ExternalPtrAddr(tensor_xptr);
@@ -56,30 +54,16 @@ SEXP tf_c_tensor_xptr_clone_tensor_xptr(SEXP tensor_xptr) {
     return tf_tensor_xptr_from_tensor(new_tensor);
 }
 
-// to do array <-> tesor conversion properly we need templated C++
-// below is just for proof-of-concept
-
-SEXP tf_c_array_real_from_tensor_xptr(SEXP tensor_xptr) {
+SEXP tf_c_array_real_from_tensor_xptr(SEXP tensor_xptr, SEXP ptype) {
     TF_Tensor* tensor = tf_tensor_checked_from_tensor_xptr(tensor_xptr);
 
+    int64_t size = TF_TensorElementCount(tensor);
+    SEXP result = PROTECT(Rf_allocVector(TYPEOF(ptype), size));
+
     int data_type = TF_TensorType(tensor);
-    int num_dims = TF_NumDims(tensor);
-    R_xlen_t size = TF_TensorElementCount(tensor);
-
-    SEXP shape = PROTECT(Rf_allocVector(INTSXP, num_dims));
-    for (int i = 0; i < num_dims; i++) {
-        INTEGER(shape)[i] = TF_Dim(tensor, i);
-    }
-
-    SEXP result;
     switch (data_type) {
     case TF_FLOAT:
-        result = PROTECT(Rf_allocArray(REALSXP, shape));
-        double* result_ptr = REAL(result);
-        float* data_ptr = (float*) TF_TensorData(tensor);
-        for (R_xlen_t i = 0; i < size; i++) {
-            result_ptr[i] = data_ptr[i];
-        }
+        tf_copy_double_from_float(REAL(result), TF_TensorData(tensor), size);
         break;
     default:
         Rf_error(
@@ -88,6 +72,14 @@ SEXP tf_c_array_real_from_tensor_xptr(SEXP tensor_xptr) {
         );
     }
 
+    // not sure what to do when dim > INT_MAX
+    int num_dims = TF_NumDims(tensor);
+    SEXP shape = PROTECT(Rf_allocVector(INTSXP, num_dims));
+    for (int i = 0; i < num_dims; i++) {
+        INTEGER(shape)[i] = TF_Dim(tensor, i);
+    }
+
+    Rf_setAttrib(result, R_DimSymbol, shape);
     UNPROTECT(2);
     return result;
 }

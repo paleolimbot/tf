@@ -6,6 +6,7 @@
 \alias{as_tf_tensor.array}
 \alias{tf_tensor_clone}
 \alias{as.array.tf_tensor}
+\alias{tf_ptype_from_tensor}
 \title{Create TensorFlow Tensors}
 \usage{
 as_tf_tensor(x, ...)
@@ -16,12 +17,17 @@ as_tf_tensor(x, ...)
 
 tf_tensor_clone(x)
 
-\method{as.array}{tf_tensor}(x, ...)
+\method{as.array}{tf_tensor}(x, ..., .ptype = tf_ptype_from_tensor(x))
+
+tf_ptype_from_tensor(x)
 }
 \arguments{
 \item{x}{An object to convert to a tensor}
 
 \item{...}{Unused}
+
+\item{.ptype}{An R vector template (e.g., \code{\link[=double]{double()}}, \code{\link[=integer]{integer()}},
+\code{\link[=raw]{raw()}}, \code{\link[=complex]{complex()}}, or \code{\link[=character]{character()}}).}
 }
 \value{
 An object of class 'tf_tensor'

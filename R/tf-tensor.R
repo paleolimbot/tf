@@ -2,6 +2,8 @@
 #' Create TensorFlow Tensors
 #'
 #' @param x An object to convert to a tensor
+#' @param .ptype An R vector template (e.g., [double()], [integer()],
+#'   [raw()], [complex()], or [character()]).
 #' @param ... Unused
 #'
 #' @return An object of class 'tf_tensor'
@@ -41,13 +43,30 @@ tf_tensor_clone <- function(x) {
 
 #' @rdname as_tf_tensor
 #' @export
-as.array.tf_tensor <- function(x, ...) {
+as.array.tf_tensor <- function(x, ..., .ptype = tf_ptype_from_tensor(x)) {
   stopifnot(tf_tensor_valid(x))
-  result <- .Call("tf_c_array_real_from_tensor_xptr", x)
+  result <- .Call("tf_c_array_real_from_tensor_xptr", x, .ptype)
   # aperm() takes care of the row-major/column-major difference
   # in the same way that keras does
   dim(result) <- rev(dim(result))
   aperm(result, rev(seq_along(dim(result))))
+}
+
+#' @rdname as_tf_tensor
+#' @export
+tf_ptype_from_tensor <- function(x) {
+  attrs <- tf_tensor_attributes(x)
+  switch(
+    attrs$data_type_label,
+    "FLOAT" =,
+    "DOUBLE" = double(),
+    stop(
+      sprintf(
+        "Can't automatically choose ptype for tf_tensor with data type '%s'",
+        attrs$data_type_label
+      )
+    )
+  )
 }
 
 #' Inspect Tensors
