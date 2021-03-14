@@ -15,8 +15,26 @@ TF_Session* tf_session_from_session_xptr(SEXP session_xptr) {
     return (TF_Session*) R_ExternalPtrAddr(session_xptr);
 }
 
+TF_Session* tf_session_checked_from_session_xptr(SEXP session_xptr) {
+    if (!Rf_inherits(session_xptr, "tf_session")) {
+        Rf_error("TF_Buffer* externalptr must inherit from 'tf_session'");
+    }
+
+    TF_Session* session = tf_session_from_session_xptr(session_xptr);
+    if (session == NULL) {
+        Rf_error("TF_Session* externalptr points to NULL");
+    }
+
+    return session;
+}
+
 TF_Graph* tf_graph_from_session_xptr(SEXP session_xptr) {
-    return (TF_Graph*) R_ExternalPtrAddr(R_ExternalPtrTag(session_xptr));
+    return tf_graph_from_graph_xptr(R_ExternalPtrTag(session_xptr));
+}
+
+TF_Graph* tf_graph_checked_from_session_xptr(SEXP session_xptr) {
+    tf_session_checked_from_session_xptr(session_xptr);
+    return tf_graph_checked_from_graph_xptr(R_ExternalPtrTag(session_xptr));
 }
 
 // constructors --------------
@@ -25,10 +43,8 @@ void session_xptr_destroy(SEXP session_xptr) {
     // finalizers are safe to call on null but CloseSession is probably not
     TF_Session* session = (TF_Session*) R_ExternalPtrAddr(session_xptr);
     if (session != NULL) {
-        TF_Status* status = TF_NewStatus();
-        TF_CloseSession(session, status);
-        TF_DeleteSession(session, status);
-        TF_DeleteStatus(status);
+        TF_CloseSession(session, tf_global_status);
+        TF_DeleteSession(session, tf_global_status);
     }
 }
 
@@ -56,16 +72,8 @@ SEXP tf_c_load_session_from_saved_model(SEXP export_dir_sexp, SEXP tags_sexp) {
     SEXP graph_xptr = PROTECT(tf_graph_xptr_new());
     TF_Graph* graph = tf_graph_from_graph_xptr(graph_xptr);
 
-    TF_Status* status = TF_NewStatus();
     TF_SessionOptions* session_options = TF_NewSessionOptions();
-    
-    if (status == NULL || session_options == NULL) {
-        // # nocov start
-        TF_DeleteStatus(status);
-        TF_DeleteSessionOptions(session_options);
-        Rf_error("Failed to alloc status or session options");
-        // # nocov end
-    }
+    tf_check_trivial_alloc(session_options, "TF_SessionOptions");
 
     TF_Session* session = TF_LoadSessionFromSavedModel(
         session_options,
@@ -74,20 +82,10 @@ SEXP tf_c_load_session_from_saved_model(SEXP export_dir_sexp, SEXP tags_sexp) {
         tags, tags_len,
         graph,
         NULL,
-        status
+        tf_global_status
     );
 
-    if (TF_GetCode(status) != TF_OK) {
-        char error_buf[8096];
-        memset(error_buf, 0, 8096);
-        strncpy(error_buf, TF_Message(status), 8096 - 1);
-
-        TF_DeleteSession(session, status);
-        TF_DeleteStatus(status);
-        TF_DeleteSessionOptions(session_options);
-
-        Rf_error(error_buf);
-    }
+    tf_check_status(tf_global_status);
 
     // attach graph to the session to protect from garbage collection
     SEXP session_xptr = PROTECT(R_MakeExternalPtr(session, graph_xptr, R_NilValue));
@@ -99,15 +97,8 @@ SEXP tf_c_load_session_from_saved_model(SEXP export_dir_sexp, SEXP tags_sexp) {
 SEXP tf_c_session_xptr_run(SEXP session_xptr, 
                            SEXP oper_name_input_sexp, SEXP oper_name_output_sexp,
                            SEXP input_tensor_xptr_list) {
-    TF_Session* session = tf_session_from_session_xptr(session_xptr);
-    if (session == NULL) {
-        Rf_error("TF_Session* is NULL");
-    }
-
-    TF_Graph* graph = tf_graph_from_session_xptr(session_xptr);
-    if (graph == NULL) {
-        Rf_error("TF_Graph* is NULL");
-    }
+    TF_Session* session = tf_session_checked_from_session_xptr(session_xptr);
+    TF_Graph* graph = tf_graph_checked_from_session_xptr(session_xptr);
 
     const char* oper_name_input = Rf_translateCharUTF8(STRING_ELT(oper_name_input_sexp, 0));
     TF_Operation* oper_input = TF_GraphOperationByName(graph, oper_name_input);
@@ -163,9 +154,7 @@ SEXP tf_c_session_xptr_run(SEXP session_xptr,
         tf_global_status
     );
 
-    if (TF_GetCode(tf_global_status) != TF_OK) {
-        Rf_error(TF_Message(tf_global_status));
-    }
+    tf_check_status(tf_global_status);
 
     // wrap output values in external pointer to ensure they are deleted
     SEXP result = PROTECT(Rf_allocVector(VECSXP, num_outputs));

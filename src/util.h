@@ -6,6 +6,12 @@
 
 extern TF_Status* tf_global_status;
 
+static inline void tf_check_status(TF_Status* status) {
+    if (TF_GetCode(status) != TF_OK) {
+        Rf_error(TF_Message(status));
+    }
+}
+
 static inline void tf_check_trivial_alloc(void* ptr, const char* ptr_type) {
     if (ptr == NULL) {
         Rf_error("Failed to alloc a new %s", ptr_type); // # nocov

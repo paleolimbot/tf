@@ -6,6 +6,7 @@
 
 #include "buffer.h"
 #include "graph.h"
+#include "util.h"
 
 // constructors --------------
 
@@ -19,7 +20,7 @@ SEXP tf_c_graph_xptr_new() {
 }
 
 SEXP tf_c_graph_xptr_list_operations(SEXP graph_xptr) {
-    TF_Graph* graph = tf_graph_from_graph_xptr(graph_xptr);
+    TF_Graph* graph = tf_graph_checked_from_graph_xptr(graph_xptr);
 
     // count operations to alloc outputs
     size_t n_operations = 0;
@@ -59,39 +60,17 @@ SEXP tf_c_graph_xptr_list_operations(SEXP graph_xptr) {
 }
 
 SEXP tf_c_graph_xptr_import_graph_def(SEXP buffer_xptr) {
-    TF_Buffer* buffer = tf_buffer_from_buffer_xptr(buffer_xptr);
-    if (buffer == NULL) {
-        Rf_error("TF_Buffer* is NULL");
-    }
+    TF_Buffer* buffer = tf_buffer_checked_from_buffer_xptr(buffer_xptr);
 
     SEXP graph_xptr = PROTECT(tf_graph_xptr_new());
     TF_Graph* graph = tf_graph_from_graph_xptr(graph_xptr);
 
-    TF_Status* status = TF_NewStatus();
     TF_ImportGraphDefOptions* options = TF_NewImportGraphDefOptions();
+    tf_check_trivial_alloc(options, "TF_ImportGraphDefOptions");
 
-    if (status == NULL || options == NULL) {
-        // # nocov start
-        TF_DeleteStatus(status);
-        TF_DeleteImportGraphDefOptions(options);
-        UNPROTECT(1);
-        Rf_error("Failed to alloc status, graph, or options");
-        // # nocov end
-    }
+    TF_GraphImportGraphDef(graph, buffer, options, tf_global_status);
+    tf_check_status(tf_global_status);
 
-    TF_GraphImportGraphDef(graph, buffer, options, status);
-    if (TF_GetCode(status) != TF_OK) {
-        char error_buf[8096];
-        memset(error_buf, 0, 8096);
-        strncpy(error_buf, TF_Message(status), 8096 - 1);
-
-        TF_DeleteStatus(status);
-        TF_DeleteImportGraphDefOptions(options);
-        
-        Rf_error(error_buf);
-    }
-
-    Rf_setAttrib(graph_xptr, R_ClassSymbol, Rf_mkString("tf_graph"));
     UNPROTECT(1);
     return graph_xptr;
 }
