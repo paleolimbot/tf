@@ -50,7 +50,7 @@ SEXP tf_c_tensor_xptr_clone_tensor_xptr(SEXP tensor_xptr) {
     }
 
     TF_Tensor* new_tensor = TF_AllocateTensor(dt, dims, num_dims, size);
-    tf_check_trivial_alloc(tensor, "TF_Tensor");
+    tf_check_trivial_alloc(new_tensor, "TF_Tensor");
     memcpy(TF_TensorData(new_tensor), TF_TensorData(tensor), size);
 
     return tf_tensor_xptr_from_tensor(new_tensor);
