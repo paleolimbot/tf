@@ -20,11 +20,16 @@
 #' tf_graph_list_operations(graph)
 #'
 #' # run a prediction!
+#' input <- as_tf_tensor(
+#'   tf_fashion_mnist_test_images[1, , , drop = FALSE],
+#'   .tf_ptype = "FLOAT"
+#' )
+#'
 #' result <- tf_session_run(
 #'   session,
 #'   "serving_default_flatten_input",
 #'   "StatefulPartitionedCall",
-#'   list(tf_fashion_mnist_test_images[1, , , drop = FALSE])
+#'   list(input)
 #' )
 #'
 #' result

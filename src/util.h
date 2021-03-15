@@ -31,4 +31,12 @@ static inline const char* tf_cstring_from_sexp(SEXP value, const char* arg) {
     return Rf_translateCharUTF8(STRING_ELT(value, 0));
 }
 
+static inline int tf_int_from_sexp(SEXP value, const char* arg) {
+    if ((TYPEOF(value) != INTSXP) || (Rf_length(value) != 1)) {
+        Rf_error("`%s` must be am integer vector of length 1", arg);
+    }
+
+    return INTEGER(value)[0];
+}
+
 #endif

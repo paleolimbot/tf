@@ -48,7 +48,10 @@ test_that("tf_session_run() works", {
     "Can't load output operation"
   )
 
-  input_tensor <- as_tf_tensor(tf_fashion_mnist_test_images[1, , , drop = FALSE])
+  input_tensor <- as_tf_tensor(
+    tf_fashion_mnist_test_images[1, , , drop = FALSE],
+    .tf_ptype = "FLOAT"
+  )
 
   result <- tf_session_run(
     session,
