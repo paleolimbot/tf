@@ -54,11 +54,16 @@ saved <- system.file("extdata/fashion_mnist.zip", package = "tf")
 session <- tf_load_session_from_saved_model(saved, "serve")
 
 # run a prediction!
+input <- as_tf_tensor(
+  tf_fashion_mnist_test_images[1:2, , , drop = FALSE],
+  .tf_ptype = "FLOAT"
+)
+
 result <- tf_session_run(
   session,
   "serving_default_flatten_input",
   "StatefulPartitionedCall",
-  list(tf_fashion_mnist_test_images[1:2, , , drop = FALSE])
+  list(input)
 )
 
 as.array(result[[1]])
