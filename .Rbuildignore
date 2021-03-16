@@ -7,3 +7,4 @@
 ^\.github$
 ^configure\.log$
 ^src/Makevars$
+^windows$
