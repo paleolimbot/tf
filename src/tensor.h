@@ -65,6 +65,7 @@ static inline const char* tf_data_type_label(int dt) {
     case TF_RESOURCE: return "RESOURCE";
     case TF_VARIANT: return "VARIANT";
     case TF_UINT32: return "UINT32";
+    case TF_UINT64: return "UINT64";
     default: return "<unknown>";
     }
 }

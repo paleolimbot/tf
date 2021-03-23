@@ -56,11 +56,13 @@ SEXP tf_c_array_from_tensor_xptr(SEXP tensor_xptr, SEXP ptype) {
         case TF_BOOL: copy_fun = &tf_copy_int32_t_from_uint8_t; break;
         default: Rf_error("Can't convert tensor of type '%s' to logical()", tf_data_type_label(data_type));
         }
+        break;
     case RAWSXP:
         switch (data_type) {
         case TF_UINT8: copy_fun = &tf_copy_uint8_t_from_uint8_t; break;
         default: Rf_error("Can't convert tensor of type '%s' to raw()", tf_data_type_label(data_type));
         }
+        break;
     case CPLXSXP:
         Rf_error("Complex vectors are not yet supported");
     default:
