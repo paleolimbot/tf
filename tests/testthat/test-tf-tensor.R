@@ -21,6 +21,23 @@ test_that("tensors can be created", {
   expect_identical(as.array(t), as.array(matrix(1)))
 })
 
+test_that("tf_tensor() can be rountripped through raw()", {
+  arr <- array(as.numeric(1:12), dim = c(2, 6))
+  ten <- as_tf_tensor(arr, .tf_ptype = "UINT8")
+  expect_identical(tf_tensor_to_bytes(ten), as.raw(t(as.array(ten, .ptype = raw()))))
+  expect_identical(
+    as.array(
+      tf_tensor_from_bytes(
+        tf_tensor_to_bytes(ten),
+        dim = c(2, 6),
+        .tf_ptype = tf_ptype_from_label("UINT8")
+      ),
+      .ptype = double()
+    ),
+    arr
+  )
+})
+
 test_that("tf_tensor() to array conversion works (shape)", {
   arr <- array(as.numeric(1:12), dim = c(2, 6))
   ten <- as_tf_tensor(arr)

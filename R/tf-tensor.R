@@ -9,6 +9,8 @@
 #' @param label One of 'FLOAT', 'DOUBLE', 'INT32', 'UINT8', 'INT16', 'INT8',
 #'   'STRING', 'COMPLEX64', 'INT64', 'BOOL', 'UINT16', 'COMPLEX128', 'UINT32',
 #'   or 'UINT64'.
+#' @param bytes The uninterpreted underlying data as a `raw()` vector.
+#' @param dim A vector of dimensions used to create the tensor
 #' @param ... Unused
 #'
 #' @return An object of class 'tf_tensor'
@@ -46,6 +48,18 @@ as_tf_tensor.array <- function(x, ..., .tf_ptype = tf_ptype(x)) {
 #' @export
 tf_tensor_clone <- function(x) {
   .Call("tf_c_tensor_xptr_clone_tensor_xptr", x)
+}
+
+#' @rdname as_tf_tensor
+#' @export
+tf_tensor_from_bytes <- function(bytes, dim, .tf_ptype) {
+  .Call("tf_c_tensor_xptr_from_bytes", as.raw(bytes), as.numeric(dim), .tf_ptype)
+}
+
+#' @rdname as_tf_tensor
+#' @export
+tf_tensor_to_bytes <- function(x) {
+  .Call("tf_c_tensor_xptr_to_bytes", x)
 }
 
 #' @rdname as_tf_tensor

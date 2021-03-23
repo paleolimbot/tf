@@ -52,3 +52,28 @@ SEXP tf_c_tensor_xptr_clone_tensor_xptr(SEXP tensor_xptr) {
 
     return tf_tensor_xptr_from_tensor(new_tensor);
 }
+
+SEXP tf_c_tensor_xptr_from_bytes(SEXP bytes, SEXP dim, SEXP tf_ptype) {
+    int dt = tf_int_from_sexp(tf_ptype, "tf_ptype");
+    int num_dims = Rf_length(dim);
+    size_t size = Rf_xlength(bytes);
+    int64_t dims[num_dims];
+    for (int i = 0; i < num_dims; i++) {
+        dims[i] = REAL(dim)[i];
+    }
+
+    TF_Tensor* new_tensor = TF_AllocateTensor(dt, dims, num_dims, size);
+    tf_check_trivial_alloc(new_tensor, "TF_Tensor");
+    memcpy(TF_TensorData(new_tensor), RAW(bytes), size);
+
+    return tf_tensor_xptr_from_tensor(new_tensor);
+}
+
+SEXP tf_c_tensor_xptr_to_bytes(SEXP tensor_xptr) {
+    TF_Tensor* tensor = tf_tensor_checked_from_tensor_xptr(tensor_xptr);
+    size_t size = TF_TensorByteSize(tensor);
+    SEXP result = PROTECT(Rf_allocVector(RAWSXP, size));
+    memcpy(RAW(result), TF_TensorData(tensor), size);
+    UNPROTECT(1);
+    return result;
+}

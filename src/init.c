@@ -21,6 +21,8 @@ extern SEXP tf_c_array_from_tensor_xptr(SEXP tensor_xptr, SEXP ptype);
 extern SEXP tf_c_tensor_xptr_from_array(SEXP array_sexp, SEXP tf_ptype);
 extern SEXP tf_c_tensor_xptr_attributes(SEXP tensor_xptr);
 extern SEXP tf_c_tensor_xptr_clone_tensor_xptr(SEXP tensor_xptr);
+extern SEXP tf_c_tensor_xptr_from_bytes(SEXP bytes, SEXP dim, SEXP tf_ptype);
+extern SEXP tf_c_tensor_xptr_to_bytes(SEXP tensor_xptr);
 extern SEXP tf_c_xptr_addr(SEXP buffer_xptr);
 extern SEXP tf_c_xptr_valid(SEXP xptr, SEXP cls_sexp);
 extern SEXP tf_c_version();
@@ -40,6 +42,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"tf_c_tensor_xptr_from_array", (DL_FUNC) &tf_c_tensor_xptr_from_array, 2},
     {"tf_c_tensor_xptr_attributes", (DL_FUNC) &tf_c_tensor_xptr_attributes, 1},
     {"tf_c_tensor_xptr_clone_tensor_xptr", (DL_FUNC) &tf_c_tensor_xptr_clone_tensor_xptr, 1},
+    {"tf_c_tensor_xptr_from_bytes", (DL_FUNC) &tf_c_tensor_xptr_from_bytes, 3},
+    {"tf_c_tensor_xptr_to_bytes", (DL_FUNC) &tf_c_tensor_xptr_to_bytes, 1},
     {"tf_c_xptr_addr", (DL_FUNC) &tf_c_xptr_addr, 1},
     {"tf_c_xptr_valid", (DL_FUNC) &tf_c_xptr_valid, 2},
     {"tf_c_version", (DL_FUNC) &tf_c_version, 0},
