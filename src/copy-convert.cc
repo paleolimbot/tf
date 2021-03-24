@@ -13,6 +13,7 @@ void tf_copy_tensor_data(void* dest_void, void* src_void, int64_t n_elements) {
     }
 }
 
+// # nocov start
 void tf_copy_double_from_double(void* dest_void, void* src_void, int64_t n_elements) {
     tf_copy_tensor_data<double, double>(dest_void, src_void, n_elements);
 }
@@ -412,3 +413,5 @@ void tf_copy_uint64_t_from_uint8_t(void* dest_void, void* src_void, int64_t n_el
 void tf_copy_uint8_t_from_uint8_t(void* dest_void, void* src_void, int64_t n_elements) {
     tf_copy_tensor_data<uint8_t, uint8_t>(dest_void, src_void, n_elements);
 }
+
+// # nocov end

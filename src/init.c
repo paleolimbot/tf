@@ -60,7 +60,9 @@ void R_init_tf(DllInfo *dll) {
     }
 }
 
+// # nocov start
 void R_unload_tf(DllInfo *dll) {
     TF_DeleteStatus(tf_global_status);
     tf_global_status = NULL;
 }
+// # nocov end
