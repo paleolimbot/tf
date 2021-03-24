@@ -1,4 +1,12 @@
 
+test_that("tf_session_new() works", {
+  graph <- tf_graph_new()
+  session <- tf_session_new(graph)
+  expect_s3_class(session, "tf_session")
+  expect_identical(tf_session_graph(session), graph)
+  tf_session_close(session)
+})
+
 test_that("tf_load_session_from_saved_model() errors", {
   expect_error(
     tf_load_session_from_saved_model("not a filename", character()),

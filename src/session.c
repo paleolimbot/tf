@@ -23,6 +23,32 @@ void session_xptr_destroy(SEXP session_xptr) {
     }
 }
 
+SEXP tf_c_session_xptr_new(SEXP graph_xptr) {
+    TF_Graph* graph = tf_graph_checked_from_graph_xptr(graph_xptr);
+
+    TF_SessionOptions* session_options = TF_NewSessionOptions();
+    tf_check_trivial_alloc(session_options, "TF_SessionOptions");
+
+    TF_Session* session = TF_NewSession(graph, session_options, tf_global_status);
+    if (TF_GetCode(tf_global_status) != TF_OK) {
+        TF_DeleteSessionOptions(session_options);
+        Rf_error(TF_Message(tf_global_status));
+    }
+
+    // attach graph to the session to protect from garbage collection
+    SEXP session_xptr = PROTECT(tf_session_xptr_from_session(session));
+    tf_session_xptr_attach_graph_xptr(session_xptr, graph_xptr);
+    UNPROTECT(1);
+    return session_xptr;
+}
+
+SEXP tf_c_session_xptr_close(SEXP session_xptr) {
+    TF_Session* session = tf_session_checked_from_session_xptr(session_xptr);
+    TF_CloseSession(session, tf_global_status);
+    tf_check_status(tf_global_status);
+    return R_NilValue;
+}
+
 SEXP tf_c_session_xptr_graph(SEXP session_xptr) {
     return R_ExternalPtrTag(session_xptr);
 }
@@ -60,7 +86,10 @@ SEXP tf_c_load_session_from_saved_model(SEXP export_dir_sexp, SEXP tags_sexp) {
         tf_global_status
     );
 
-    tf_check_status(tf_global_status);
+    if (TF_GetCode(tf_global_status) != TF_OK) {
+        TF_DeleteSessionOptions(session_options);
+        Rf_error(TF_Message(tf_global_status));
+    }
 
     // attach graph to the session to protect from garbage collection
     SEXP session_xptr = PROTECT(tf_session_xptr_from_session(session));

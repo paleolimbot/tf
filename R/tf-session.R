@@ -2,6 +2,7 @@
 #' TensorFlow Sessions
 #'
 #' @param x An object of class 'tf_session'
+#' @param graph A [tf_graph][tf_graph_new]
 #' @param export_dir A directory to a saved model
 #' @param tags must include the set of tags used to identify one MetaGraphDef in
 #'   the SavedModel.
@@ -34,7 +35,20 @@
 #'
 #' result
 #' as.array(result[[1]])
+#' tf_session_close(session)
 #'
+tf_session_new <- function(graph) {
+  .Call("tf_c_session_xptr_new", graph)
+}
+
+#' @rdname tf_session_new
+#' @export
+tf_session_close <- function(x) {
+  invisible(.Call("tf_c_session_xptr_close", x))
+}
+
+#' @rdname tf_session_new
+#' @export
 tf_load_session_from_saved_model <- function(export_dir, tags) {
   export_dir <- path.expand(export_dir)
 
@@ -50,13 +64,13 @@ tf_load_session_from_saved_model <- function(export_dir, tags) {
   .Call("tf_c_load_session_from_saved_model", path.expand(export_dir), tags)
 }
 
-#' @rdname tf_load_session_from_saved_model
+#' @rdname tf_session_new
 #' @export
 tf_session_graph <- function(x) {
   .Call("tf_c_session_xptr_graph", x)
 }
 
-#' @rdname tf_load_session_from_saved_model
+#' @rdname tf_session_new
 #' @export
 tf_session_run <- function(x, input_operation, output_operation, input) {
   input <- lapply(input, as_tf_tensor)
