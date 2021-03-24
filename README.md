@@ -8,6 +8,8 @@
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![R-CMD-check](https://github.com/paleolimbot/tf/workflows/R-CMD-check/badge.svg)](https://github.com/paleolimbot/tf/actions)
+[![Codecov test
+coverage](https://codecov.io/gh/paleolimbot/tf/branch/master/graph/badge.svg)](https://codecov.io/gh/paleolimbot/tf?branch=master)
 <!-- badges: end -->
 
 The goal of tf is to wrap the [TensorFlow C
